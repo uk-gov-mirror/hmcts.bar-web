@@ -1,5 +1,5 @@
 product_url = "bar.demo.platform.hmcts.net"
-idam_api_url = "http://idam-api-idam-demo.service.core-compute-demo.internal"
-authentication_web_url = "https://idam-web-public-idam-demo.service.core-compute-demo.internal/login"
+idam_api_url = "https://idam-api.demo.platform.hmcts.net"
+authentication_web_url = "https://idam-web-public.demo.platform.hmcts.net/login"
 capacity = "2"
 vault_section = "preprod"
