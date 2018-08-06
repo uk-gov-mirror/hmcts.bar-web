@@ -44,14 +44,14 @@ module.exports = {
           .setFileName(fileName)
           .setStatus(httpStatusCodes.UNAUTHORIZED)
           .setTitle('401 - Access Denied')
-          .setDetailedMessage(`This server could not verify that you are authorized to access the document requested. Message from IDAM server: ${JSON.stringify(err)`),
+          .setDetailedMessage(`This server could not verify that you are authorized to access the document requested. Message from IDAM server: ${JSON.stringify(err)}`),
       createForbiddenError: (err, message = '403 - Forbidden') =>
         new ApiCallError(message)
           .setRemoteError(err)
           .setFileName(fileName)
           .setStatus(httpStatusCodes.FORBIDDEN)
           .setTitle('403 - Forbidden')
-          .setDetailedMessage(`You do not have permission to retrieve the URL or link you requested. Message from IDAM server: ${JSON.stringify(err)`)
+          .setDetailedMessage(`You do not have permission to retrieve the URL or link you requested. Message from IDAM server: ${JSON.stringify(err)}`)
     };
   }
 };
