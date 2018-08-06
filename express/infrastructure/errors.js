@@ -37,7 +37,7 @@ module.exports = {
           .setFileName(fileName)
           .setStatus(httpStatusCodes.INTERNAL_SERVER_ERROR)
           .setTitle('500 - Internal Server Error')
-          .setDetailedMessage('The server encountered an internal error or misconfiguration and was unable to complete your request'),
+          .setDetailedMessage(`The server encountered an internal error or misconfiguration and was unable to complete your request: ${JSON.stringify(err)}`),
       createUnatohorizedError: (err, message = '401 - Access Denied') =>
         new ApiCallError(message)
           .setRemoteError(err)
