@@ -8,6 +8,8 @@ import { UserService } from '../../../shared/services/user/user.service';
 import { PaymentsOverviewService } from '../../services/paymentoverview/paymentsoverview.service';
 import { UserRole } from '../../models/userrole.model';
 import { OverviewData } from '../../models/overviewdata.model';
+import { BarHttpClient } from '../../../shared/services/httpclient/bar.http.client';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-payment-overview',
@@ -31,13 +33,21 @@ export class PaymentOverviewComponent implements OnInit {
   feeClerks = [];
   seniorFeeClerks = [];
   deliveryManagers = [];
+  total = 0;
+  showModal = false;
+  loading = false;
+  payhubReport = {
+    total: 0,
+    success: 0
+  };
 
   errors = [];
 
   constructor(
     private userService: UserService,
     private paymentsLogService: PaymentslogService,
-    private paymentOverviewService: PaymentsOverviewService
+    private paymentOverviewService: PaymentsOverviewService,
+    private http: BarHttpClient
   ) { }
 
   ngOnInit() {
@@ -62,20 +72,7 @@ export class PaymentOverviewComponent implements OnInit {
         }, console.log);
     }
 
-    if (this.userService.getUser().roles.indexOf(UserRole.DELIVERYMANAGER) > -1) {
-      this.paymentOverviewService
-      .getPaymentsOverview(PaymentStatus.TRANSFERREDTOBAR)
-      .subscribe({
-        next: (result: IResponse) => {
-          if (!result.success) {
-            this.errors.push(result.message);
-            return false;
-          }
-          this.createDeliveryManagerOverview(result.data);
-        },
-        error: console.log
-      });
-    }
+    this.createDeliveryManagerOverview();
 
     this.paymentOverviewService
       .getPaymentsOverview(this.status)
@@ -213,7 +210,26 @@ export class PaymentOverviewComponent implements OnInit {
 
   }
 
-  createDeliveryManagerOverview(deliveryManagerData) {
+  createDeliveryManagerOverview() {
+    if (this.userService.getUser().roles.indexOf(UserRole.DELIVERYMANAGER) > -1) {
+      this.paymentOverviewService
+      .getPaymentsOverview(PaymentStatus.TRANSFERREDTOBAR)
+      .subscribe({
+        next: (result: IResponse) => {
+          if (!result.success) {
+            this.errors.push(result.message);
+            return false;
+          }
+          this.handleDeliveryManagerData(result.data);
+        },
+        error: console.log
+      });
+    }
+  }
+
+  handleDeliveryManagerData(deliveryManagerData) {
+    this.total = 0;
+    this.deliveryManagers = [];
     const keys = Object.keys(deliveryManagerData);
     let i;
     for (i = 0; i < keys.length; i++) {
@@ -230,8 +246,8 @@ export class PaymentOverviewComponent implements OnInit {
       });
 
       this.deliveryManagers.push(model);
+      this.total += model.readyToTransferToBar;
     }
-
   }
 
   changeTabs(tabNumber: number) { this.openedTab = tabNumber; }
@@ -266,4 +282,19 @@ export class PaymentOverviewComponent implements OnInit {
     }
   }
 
+  onClickConfirm() {
+    this.payhubReport = {success: 0, total: 0};
+    this.http.get(`${environment.apiUrl}/payment-instructions/send-to-payhub`).subscribe(payhubReport => {
+      this.payhubReport = payhubReport.data;
+      this.loading = false;
+    });
+    this.showModal = true;
+    this.loading = true;
+  }
+
+  returnUploadModal() {
+    this.showModal = false;
+    this.openedTab = 4;
+    this.createDeliveryManagerOverview();
+  }
 }
