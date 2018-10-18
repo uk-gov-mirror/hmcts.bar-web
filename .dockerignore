@@ -19,6 +19,8 @@
 !dev-certificates/**
 !app-insights.js
 !angular.json
+!package-deploy.json
+!dist
 
 
 !src/**
