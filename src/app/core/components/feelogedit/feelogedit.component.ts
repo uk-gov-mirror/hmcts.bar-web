@@ -12,6 +12,7 @@ import { PaymentStatus } from '../../models/paymentstatus.model';
 import { PaymentInstructionModel } from '../../models/paymentinstruction.model';
 import { ICaseFeeDetail } from '../../interfaces/payments-log';
 import { IPaymentAction } from '../../interfaces/payment-actions';
+import { UtilService } from '../../../shared/services/util/util.service';
 import {
   FeeDetailEventMessage,
   EditTypes,
@@ -45,6 +46,8 @@ export class FeelogeditComponent implements OnInit {
   detailPageType = EditTypes.CREATE;
   paymentActions$: Observable<IPaymentAction[]>;
 
+  jurisdictions = this.createEmptyJurisdiction();
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -61,6 +64,7 @@ export class FeelogeditComponent implements OnInit {
     this.paymentActions$ = this.paymentActionService
       .getPaymentActions()
       .pipe(map((data: IResponse) => data.data));
+    this.loadFeeJurisdictions();
   }
 
   onRouteParams(params) {
@@ -72,6 +76,19 @@ export class FeelogeditComponent implements OnInit {
         return this.router.navigateByUrl('/paymentslog');
       }
     }
+  }
+
+  createEmptyJurisdiction() {
+    return {
+      list1: {
+        show: false,
+        data: []
+      },
+      list2: {
+        show: false,
+        data: []
+      }
+    };
   }
 
   addEditFeeToCase(message: FeeDetailEventMessage): Promise<any> {
@@ -87,10 +104,7 @@ export class FeelogeditComponent implements OnInit {
       this.model.status === PaymentStatus.TRANSFERREDTOBAR &&
       message.editType === EditTypes.UPDATE
     ) {
-      return this.editTransferedFee(
-        message.feeDetail,
-        message.originalFeeDetail
-      );
+      return this.editTransferedFee(message.feeDetail, message.originalFeeDetail);
     }
     // check if we already have a fee_id
     let method = 'post';
@@ -167,15 +181,44 @@ export class FeelogeditComponent implements OnInit {
       });
   }
 
+  async loadFeeJurisdictions() {
+    this.jurisdictions = this.createEmptyJurisdiction();
+    const [err1, data1] = await UtilService.toAsync(this.feeLogService.getFeeJurisdictions('1'));
+    if (err1) {
+      console.log('Cannot perform fetch', err1);
+      return;
+    }
+
+    if (data1.found) {
+      data1.jurisdictions.map(jurisdiction => {
+        this.jurisdictions.list1.data.push(jurisdiction.name);
+      });
+    }
+
+    const [err2, data2] = await UtilService.toAsync(this.feeLogService.getFeeJurisdictions('2'));
+    if (err2) {
+      console.log('Cannot perform fetch', err2);
+      return;
+    }
+
+    if (data2.found) {
+      data2.jurisdictions.map(jurisdiction => {
+        this.jurisdictions.list2.data.push(jurisdiction.name);
+      });
+    }
+  }
+
   goBack() {
-    this.location.back();
+    (this.mainComponentOn)
+      ? this.location.back()
+      : this.mainComponentOn = true;
   }
 
   onProcessPaymentSubmission(model: PaymentInstructionModel) {
     this.paymentInstructionActionModel.action = PaymentAction.PROCESS;
     this.feeLogService
       .sendPaymentInstructionAction(model, this.paymentInstructionActionModel)
-      .then((response) => {
+      .then(() => {
         this.paymentInstructionActionModel = new PaymentInstructionActionModel();
         return this.router.navigateByUrl('/feelog');
       })
@@ -202,6 +245,22 @@ export class FeelogeditComponent implements OnInit {
     }
   }
 
+  onWithdrawPaymentSubmission(): void {
+    this.paymentInstructionActionModel.action = PaymentAction.WITHDRAW;
+    this.paymentInstructionActionModel.action_reason = this.model.withdraw_reason;
+    if (this.model.withdraw_comment) {
+      this.paymentInstructionActionModel.action_comment = this.model.withdraw_comment;
+    }
+
+    this.feeLogService
+      .sendPaymentInstructionAction(this.model, this.paymentInstructionActionModel)
+      .then(() => this.router.navigateByUrl('/feelog'))
+      .catch(err => {
+        console.log(err);
+        this.submitActionError = err.error.data;
+      });
+  }
+
   returnPaymentToPostClerk() {
     this.model.status = PaymentStatus.VALIDATED;
     this.model.action = PaymentAction.RETURNS;
@@ -209,6 +268,11 @@ export class FeelogeditComponent implements OnInit {
     this.feeLogService.updatePaymentModel(this.model).then(res => {
       this.toggleReturnModal();
       return this.router.navigateByUrl('/feelog');
+    })
+    .catch(err => {
+      console.log(err);
+      this.submitActionError = err.error.data;
+      this.toggleReturnModal();
     });
   }
 
@@ -249,7 +313,7 @@ export class FeelogeditComponent implements OnInit {
     this.detailPageType = feeDetailEventMessage.editType;
     this.mainComponentOn = false;
     this.feeDetailsComponentOn = true;
-    this.router.navigateByUrl(`${this.router.url}#details`);
+    return this.router.navigateByUrl(`${this.router.url}`);
   }
 
   closeDetails() {
@@ -267,12 +331,26 @@ export class FeelogeditComponent implements OnInit {
       : [];
   }
 
+  onFeeDetailCancel() {
+    this.mainComponentOn = true;
+  }
+
   onSuspensePayment() {
     this.suspenseModalOn = true;
   }
 
   onReturnPayment() {
     this.returnModalOn = true;
+  }
+
+  onWithdrawPayment() {
+    console.log(this.model);
+    this.model.action = PaymentAction.WITHDRAW;
+    this.model.status = PaymentStatus.VALIDATED;
+    this.feeLogService.updatePaymentModel(this.model).then(res => {
+      this.toggleReturnModal();
+      return this.router.navigateByUrl('/feelog');
+    });
   }
 
   onPaymentReversion(e: undefined) {

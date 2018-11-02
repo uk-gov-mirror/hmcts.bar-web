@@ -29,11 +29,13 @@ describe('Test: FeeService', () => {
     };
   });
 
-  it('getFees', async() => {
-    const feeService = new FeeService({});
-    const respPromise = await feeService.getFees(req);
-    const respLength = 219;
-    expect(respPromise.body.length).to.equal(respLength);
+  it('getJurisdictions', async() => {
+    const makeHttpRequest = opts => Promise.resolve(opts);
+    const feeService = new FeeService(makeHttpRequest);
+    const request = { query: { jurisdiction: '1' } };
+    const response = await feeService.getJurisdictions(request);
+    expect(response.uri).to.equal('http://localhost:23443/jurisdictions1');
+    expect(response.method).to.equal('GET');
   });
 
   it('addEditFeeToCase', async() => {
@@ -57,9 +59,9 @@ describe('Test: FeeService', () => {
     const makeHttpRequest = opts => Promise.resolve(opts);
     const feeService = new FeeService(makeHttpRequest);
     // temporarily insert a "query" query property / key
-    req.query = { query: '550' };
+    req.query = { query: '550', jurisdiction1: 'family', jurisdiction2: 'county court' };
     const respPromise = await feeService.searchForFee(req);
-    expect(respPromise.uri).to.equal('http://localhost:23443/fees?isDraft=false&isActive=true&isExpired=false&feeVersionAmount=550');
+    expect(respPromise.uri).to.equal('http://localhost:23443/fees?isDraft=false&isActive=true&isExpired=false&feeVersionAmount=550&jurisdiction1=family&jurisdiction2=county court');
     expect(respPromise.method).to.equal('GET');
   });
 

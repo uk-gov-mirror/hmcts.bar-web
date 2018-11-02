@@ -21,8 +21,19 @@ export class FeeDetailComponent implements OnInit, OnChanges {
   @Input() currency: string;
   @Input() isRefundEnabled: boolean;
   @Input() previousCases: Array<string>;
-  @Output() onCloseComponent = new EventEmitter<FeeDetailEventMessage> ();
-  @Output() onAmountChange = new EventEmitter<UnallocatedAmountEventMessage> ();
+  @Input() jurisdictions = {
+    list1: {
+      show: false,
+      data: []
+    },
+    list2: {
+      show: false,
+      data: []
+    }
+  };
+  @Output() onCloseComponent = new EventEmitter<FeeDetailEventMessage>();
+  @Output() onFeeDetailCancel = new EventEmitter();
+  @Output() onAmountChange = new EventEmitter<UnallocatedAmountEventMessage>();
 
   feeCodes: FeeSearchModel[] = [];
   feeCodesSearch: FeeSearchModel[] = [];
@@ -37,6 +48,8 @@ export class FeeDetailComponent implements OnInit, OnChanges {
   timeout: any;
   validator = new FeeDetailValidator();
   _savePressed = false;
+  jurisdiction1: string;
+  jurisdiction2: string;
 
   constructor(private feeLogService: FeelogService, private _location: Location) {
     this.feeDetail = new FeeDetailModel();
@@ -110,7 +123,8 @@ export class FeeDetailComponent implements OnInit, OnChanges {
   }
 
   async loadFeeCodesAndDescriptions() {
-    const [err, data] = await UtilService.toAsync(this.feeLogService.getFeeCodesAndDescriptions(this.searchQuery));
+    const [err, data] = await UtilService.toAsync(this.feeLogService.getFeeCodesAndDescriptions(this.searchQuery,
+      this.jurisdiction1, this.jurisdiction2));
     if (err) {
       console.log('Cannot perform fetch', err);
       return;
@@ -133,14 +147,7 @@ export class FeeDetailComponent implements OnInit, OnChanges {
       return;
     }
     this.selectorVisible = true;
-    clearTimeout(this.timeout);
-    return new Promise<void>((resolve, reject) => {
-      this.timeout = setTimeout(() => {
-        this.loadFeeCodesAndDescriptions()
-          .then(result => resolve(result))
-          .catch(err => reject(err));
-      }, 600);
-    });
+    this.loadFeeCodesAndDescriptions();
   }
 
   selectFee(feeCodeModel: FeeSearchModel) {
@@ -185,7 +192,7 @@ export class FeeDetailComponent implements OnInit, OnChanges {
   }
 
   cancel() {
-    this._location.back();
+    this.onFeeDetailCancel.emit();
   }
 
   save() {
@@ -193,7 +200,12 @@ export class FeeDetailComponent implements OnInit, OnChanges {
       return;
     }
     this._savePressed = true;
-    this._location.back();
+    this.onCloseComponent.emit({
+      feeDetail: this.feeDetail,
+      originalFeeDetail: this.feeDetailCopy,
+      editType: this.type
+    });
+    // this.onFeeDetailCancel.emit();
   }
 
   onSavePressed() {
@@ -204,8 +216,8 @@ export class FeeDetailComponent implements OnInit, OnChanges {
       editType: this.type
     });
     this.resetComponent();
-    this._location.replaceState(this._location.path());
     this._savePressed = false;
+    // this._location.replaceState(this._location.path());
   }
 
   resetForm() {
@@ -256,6 +268,18 @@ export class FeeDetailComponent implements OnInit, OnChanges {
 
   get case_reference() {
     return this.feeDetail.case_reference;
+  }
+
+  toggleJurisdiction(jurisdiction) {
+    jurisdiction.show = !jurisdiction.show;
+  }
+
+  onSelectJurisdiction1Type(jurisdiction1: string) {
+    this.jurisdiction1 = jurisdiction1;
+  }
+
+  onSelectJurisdiction2Type(jurisdiction2: string) {
+    this.jurisdiction2 = jurisdiction2;
   }
 }
 

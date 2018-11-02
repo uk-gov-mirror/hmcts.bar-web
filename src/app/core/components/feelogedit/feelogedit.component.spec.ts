@@ -1,19 +1,21 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { HttpModule } from '@angular/http';
 import { HttpClientModule } from '@angular/common/http';
 import { FeelogeditComponent } from './feelogedit.component';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../../../shared/services/user/user.service';
 import { HmctsModalComponent } from '../../../shared/components/hmcts-modal/hmcts-modal.component';
-import { PaymentstateService } from '../../../shared/services/state/paymentstate.service';
+import { PaymentStateService } from '../../../shared/services/state/paymentstate.service';
 import { FormatPound } from '../../../shared/pipes/format-pound.pipe';
 import { PaymentStatus } from '../../models/paymentstatus.model';
 import { CookieService } from 'ngx-cookie-service';
 import { FeelogService } from '../../services/feelog/feelog.service';
 import { PaymentslogService } from '../../services/paymentslog/paymentslog.service';
 import { ModalComponent } from '../modal/modal.component';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 // include mocks
 import { PaymentLogServiceMock } from '../../test-mocks/payment-log.service.mock';
@@ -43,6 +45,7 @@ import { PaymentActionServiceMock } from '../../test-mocks/payment-action.servic
 import { PaymentActionService } from '../../../shared/services/action/paymentaction.service';
 
 // ---------------------------------------------------------------------------------
+
 let feeLogServiceMock: any;
 let paymentLogServiceMock: any;
 let paymentActionServiceMock: any;
@@ -75,7 +78,7 @@ describe('FeelogeditComponent', () => {
       providers: [
         UserService,
         CookieService,
-        { provide: PaymentstateService, useClass: PaymentstateServiceMock },
+        { provide: PaymentStateService, useClass: PaymentstateServiceMock },
         { provide: BarHttpClient, useClass: BarHttpClientMock }
       ]
     });
@@ -83,9 +86,14 @@ describe('FeelogeditComponent', () => {
     TestBed.overrideComponent(FeelogeditComponent, {
       set: {
         providers: [
+          UserService,
+          CookieService,
+          { provide: PaymentStateService, useClass: PaymentstateServiceMock },
+          { provide: BarHttpClient, useClass: BarHttpClientMock },
           { provide: FeelogService, useClass: FeelogServiceMock },
           { provide: PaymentslogService, useClass: PaymentLogServiceMock },
-          { provide: PaymentActionService, useClass: PaymentActionServiceMock }
+          { provide: PaymentActionService, useClass: PaymentActionServiceMock },
+          { provide: FeatureService, useClass: FeatureServiceMock }
         ]
       }
     });
@@ -93,8 +101,8 @@ describe('FeelogeditComponent', () => {
     TestBed.overrideComponent(FeelogMainComponent, {
       set: {
         providers: [
-          { provide: FeelogService, useClass: FeelogServiceMock },
-          { provide: PaymentslogService, useClass: PaymentLogServiceMock },
+          UserService,
+          CookieService,
           { provide: FeatureService, useClass: FeatureServiceMock }
         ]
       }
@@ -109,6 +117,7 @@ describe('FeelogeditComponent', () => {
     paymentActionServiceMock = fixture.debugElement.injector.get(
       PaymentActionService
     );
+    spyOn(component, 'loadFeeJurisdictions').and.callThrough();
     fixture.detectChanges();
   });
 
@@ -168,22 +177,7 @@ describe('FeelogeditComponent', () => {
     component.loadPaymentInstructionById(1);
     await fixture.whenStable();
     fixture.detectChanges();
-    const feeLogMainComp = fixture.debugElement.query(
-      By.css('.feelog-main-component')
-    );
-    const editButton = fixture.debugElement.query(
-      By.css('#fee-details button')
-    );
-    editButton.triggerEventHandler('click', null);
-    fixture.detectChanges();
-    const feeDetailComp = fixture.debugElement.query(
-      By.css('#feedetail-component')
-    );
-    expect(feeLogMainComp.nativeElement.hidden).toBeTruthy();
-    expect(feeDetailComp.nativeElement.hidden).toBeFalsy();
-    expect(
-      convertTxtToOneLine(feeDetailComp.nativeElement.innerHTML)
-    ).toEqual(getFeeLogDetailHtml());
+    expect(component.feeDetailsComponentOn).toBeFalsy();
   });
 
   it('Edit feecasedetail but no changes were made', async() => {
@@ -274,16 +268,8 @@ describe('FeelogeditComponent', () => {
     fixture.detectChanges();
     await component.addEditFeeToCase(message);
     expect(feelogServiceSpy).toHaveBeenCalledTimes(2);
-    expect(feelogServiceSpy).toHaveBeenCalledWith(
-      '1',
-      negatedFeeDetail,
-      'post'
-    );
-    expect(feelogServiceSpy).toHaveBeenCalledWith(
-      '1',
-      message.feeDetail,
-      'post'
-    );
+    expect(feelogServiceSpy).toHaveBeenCalledWith('1', negatedFeeDetail, 'post');
+    expect(feelogServiceSpy).toHaveBeenCalledWith('1', message.feeDetail, 'post');
   });
 
   it('negate case_fee_detail for restro spective editing', () => {
@@ -346,13 +332,11 @@ describe('FeelogeditComponent', () => {
       }
     };
     component.onSuspenseFormSubmit(mockEvent);
-    component.paymentInstructionActionModel.reason = 'something';
+    component.paymentInstructionActionModel.action_reason = 'something';
 
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(component.paymentInstructionActionModel.action).toBe(
-      PaymentAction.SUSPENSE
-    );
+    expect(component.paymentInstructionActionModel.action).toBe(PaymentAction.SUSPENSE);
     expect(component.suspenseModalOn).toBeFalsy();
   });
 
@@ -395,11 +379,8 @@ describe('FeelogeditComponent', () => {
   it('should change payment to validated...', async() => {
     component.model = getPaymentInstructionById(1);
     component.onProcessPaymentSubmission(component.model);
-
-    expect(component.paymentInstructionActionModel.action).toBe(
-      PaymentAction.PROCESS
-    );
     await fixture.whenStable();
+
     expect(component.paymentInstructionActionModel.action).toBe(
       PaymentAction.SUSPENSE
     );
@@ -414,4 +395,76 @@ describe('FeelogeditComponent', () => {
     await fixture.whenStable();
     expect(component.model.unallocated_amount).toBe(0);
   });
+
+  it('should send a payment with withdraw', async() => {
+    const sendPaymentInstructionActionSpy = spyOn(feeLogServiceMock, 'sendPaymentInstructionAction').and.callThrough();
+    await fixture.whenStable();
+
+    const paymentInstruction = createPaymentInstruction();
+    const paymentInstructionAction = new PaymentInstructionActionModel();
+    paymentInstructionAction.action = PaymentAction.WITHDRAW;
+    paymentInstructionAction.action_comment = 'Hello World.';
+    component.model = paymentInstruction;
+    component.model.withdraw_reason = 'Hello World.';
+    component.paymentInstructionActionModel = paymentInstructionAction;
+    component.onWithdrawPaymentSubmission();
+    expect(sendPaymentInstructionActionSpy).toHaveBeenCalledWith(paymentInstruction, paymentInstructionAction);
+  });
+
+  it('test hadle jusrisdiction load failure', () => {
+    spyOn(feeLogServiceMock, 'getFeeJurisdictions').and.throwError('failed to load jurisdictions');
+    component.ngOnInit();
+    expect(component.jurisdictions).toEqual(component.createEmptyJurisdiction());
+  });
+
+  it('show error when submit was unsuccesful', async() => {
+    spyOn(feeLogServiceMock, 'sendPaymentInstructionAction').and.returnValue(Promise.reject({ error: {data : 'failed to submit action'}}));
+    component.model = getPaymentInstructionById(1);
+    component.onProcessPaymentSubmission(component.model);
+    await fixture.whenStable();
+
+    expect(component.paymentInstructionActionModel.action).toBe(
+      PaymentAction.PROCESS
+    );
+    expect(component.paymentInstructionActionModel.status).toBe(
+      PaymentStatus.VALIDATED
+    );
+
+    expect(component.submitActionError).toBe('failed to submit action');
+  });
+
+  it('show error when withdraw was unsuccesful', async() => {
+    spyOn(feeLogServiceMock, 'sendPaymentInstructionAction').and
+      .returnValue(Promise.reject({ error: {data : 'failed to submit withdraw'}}));
+    component.model = getPaymentInstructionById(1);
+    component.onWithdrawPaymentSubmission();
+    await fixture.whenStable();
+
+    expect(component.paymentInstructionActionModel.action).toBe(
+      PaymentAction.WITHDRAW
+    );
+    expect(component.paymentInstructionActionModel.status).toBe(
+      PaymentStatus.VALIDATED
+    );
+
+    expect(component.submitActionError).toBe('failed to submit withdraw');
+  });
+
+  it('show error when return was unsuccesful', async() => {
+    spyOn(feeLogServiceMock, 'updatePaymentModel').and
+      .returnValue(Promise.reject({ error: {data : 'failed to submit return'}}));
+    component.model = getPaymentInstructionById(1);
+    component.returnPaymentToPostClerk();
+    await fixture.whenStable();
+
+    expect(component.paymentInstructionActionModel.action).toBe(
+      PaymentAction.SUSPENSE
+    );
+    expect(component.paymentInstructionActionModel.status).toBe(
+      PaymentStatus.VALIDATED
+    );
+
+    expect(component.submitActionError).toBe('failed to submit return');
+  });
+
 });

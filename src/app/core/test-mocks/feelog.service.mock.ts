@@ -1,7 +1,7 @@
 import {FeeDetailModel} from '../models/feedetail.model';
-import { CaseFeeDetailModel } from '../models/casefeedetail';
 import { ICaseFeeDetail } from '../interfaces/payments-log';
 import { PaymentInstructionModel } from '../models/paymentinstruction.model';
+import { PaymentInstructionActionModel } from '../models/payment-instruction-action.model';
 
 const feeSearchResult = `{"found": "true", "fees": [
    {
@@ -111,7 +111,7 @@ const feeSearchResult = `{"found": "true", "fees": [
 
 export class FeelogServiceMock {
 
-  getFeeCodesAndDescriptions(query: string): Promise<any> {
+  getFeeCodesAndDescriptions(query: string, jurisdiction1: string, jurisdiction2: string): Promise<any> {
     if (query) {
       return new Promise(resolve => resolve(JSON.parse(feeSearchResult)));
     }
@@ -126,11 +126,19 @@ export class FeelogServiceMock {
     return Promise.resolve();
   }
 
-  sendPaymentInstructionAction(model, paymentInstructionActionModel) {
+  sendPaymentInstructionAction(
+    model: PaymentInstructionModel,
+    paymentInstructionActionModel: PaymentInstructionActionModel
+  ) {
     return Promise.resolve({ success: true });
   }
 
   updatePaymentModel(model: PaymentInstructionModel) {
     return Promise.resolve({  });
+  }
+
+  getFeeJurisdictions(query: string) {
+    const jurisdictionsArray = [{name: 'civil'}, {name: 'civil1'}, {name: 'civil2'}];
+    return Promise.resolve({ found: true, jurisdictions: jurisdictionsArray, success: true });
   }
 }

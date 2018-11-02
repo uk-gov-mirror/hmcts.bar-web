@@ -17,13 +17,29 @@ export class FeelogService {
       .toPromise();
   }
 
-  getFeeCodesAndDescriptions(query: string) {
+  getFeeCodesAndDescriptions(query: string, jurisdiction1: string, jurisdiction2: string) {
     let url = `/api/fees/search`;
     if (query) {
       url += `?query=${query}`;
+      if (jurisdiction1) {
+        url += `&jurisdiction1=${jurisdiction1}`;
+      }
+      if (jurisdiction2) {
+        url += `&jurisdiction2=${jurisdiction2}`;
+      }
       return this.http.get(url).toPromise();
     } else {
       return Promise.resolve({ found: true, fees: [], success: true });
+    }
+  }
+
+  getFeeJurisdictions(query?: string) {
+    let url = `/api/fees/jurisdictions`;
+    if (query) {
+      url += `?jurisdiction=${query}`;
+      return this.http.get(url).toPromise();
+    } else {
+      return Promise.resolve({ found: true, jurisdictions: [], success: true });
     }
   }
 
