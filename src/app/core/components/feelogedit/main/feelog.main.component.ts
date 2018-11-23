@@ -14,11 +14,12 @@ import { FeatureService } from '../../../../shared/services/feature/feature.serv
 import Feature from '../../../../shared/models/feature.model';
 import { UserService } from '../../../../shared/services/user/user.service';
 import { PaymentStateService } from '../../../../shared/services/state/paymentstate.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IPaymentAction } from '../../../interfaces/payment-actions';
 import { PaymentAction } from '../../../models/paymentaction.model';
 import {WithdrawReasonModel, IWithdrawReason} from '../../../models/withdrawreason.model';
+import { ReturnReasonModel, IReturnReason } from '../../../models/returnreason.model';
 
 
 @Component({
@@ -33,20 +34,25 @@ export class FeelogMainComponent implements OnInit {
   @Input() isVisible: boolean;
   @Input() actions: IPaymentAction[] = [];
   @Input() submitActionError: string;
+  @Input() isReadOnly: boolean;
   @Output() onShowDetail = new EventEmitter<FeeDetailEventMessage>();
   @Output() onReloadModel = new EventEmitter<number>();
   @Output() onProcess = new EventEmitter<PaymentInstructionModel>();
   @Output() onSuspense = new EventEmitter<any>();
+  @Output() onRefund = new EventEmitter<void>();
   @Output() onReturn = new EventEmitter<any>();
   @Output() onPaymentReversion = new EventEmitter<undefined>();
   @Output() onWithDraw = new EventEmitter<PaymentInstructionModel>();
+  @Output() onSuspenseDeficiency = new EventEmitter<void>();
 
   isReadOnly$: Observable<boolean>;
   selectedAction: IPaymentAction;
   showError = false;
   confirmAction: { error: boolean, message: string };
   showWithdrawTextArea = false;
+  showReturnTextArea = false;
   withdrawReasons = new WithdrawReasonModel();
+  returnReasons = new ReturnReasonModel();
 
   constructor(
     private feeLogService: FeelogService,
@@ -99,6 +105,10 @@ export class FeelogMainComponent implements OnInit {
       this.returnPayment();
     } else if (this.selectedAction.action === PaymentAction.WITHDRAW) {
       this.withdrawPayment();
+    } else if (this.selectedAction.action === PaymentAction.SUSPENSEDEFICIENCY) {
+      this.suspenseDeficiencyPayment();
+    } else if (this.selectedAction.action === PaymentAction.REFUNDED) {
+      this.refundPayment();
     }
   }
 
@@ -164,8 +174,16 @@ export class FeelogMainComponent implements OnInit {
     this.onProcess.emit(this.model);
   }
 
+  refundPayment() {
+    this.onRefund.emit();
+  }
+
   returnPayment() {
     this.onReturn.emit();
+  }
+
+  suspenseDeficiencyPayment() {
+    this.onSuspenseDeficiency.emit();
   }
 
   suspensePayment() {
@@ -196,6 +214,16 @@ export class FeelogMainComponent implements OnInit {
       .pipe(map(it => this.model.getPaymentReference(it)));
   }
 
+  getReturnReason(reasonId: number): string {
+    const reason = this.returnReasons.reasons.find((model: IReturnReason) => model.id === reasonId);
+    return (isUndefined(reason)) ? '' : reason.reason;
+  }
+
+  getWithdrawReason(withdrawId: number): string {
+    const withdraw = this.withdrawReasons.reasons.find((model: IWithdrawReason) => model.id === withdrawId);
+    return (isUndefined(withdraw)) ? '' : withdraw.reason;
+  }
+
   // Events go here ---------------------- ---------------------- ----------------------
 
   onChangeAction(paymentAction: IPaymentAction) {
@@ -206,6 +234,8 @@ export class FeelogMainComponent implements OnInit {
   onToggleReason(value: string) {
     const valueInt = parseInt(value, 10);
     this.showWithdrawTextArea = this.withdrawReasons
+      .getReasonById(valueInt).id === 3;
+    this.showReturnTextArea = this.returnReasons
       .getReasonById(valueInt).id === 3;
   }
 }

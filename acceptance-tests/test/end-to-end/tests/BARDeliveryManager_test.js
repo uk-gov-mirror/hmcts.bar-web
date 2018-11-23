@@ -7,7 +7,7 @@ Before(I => {
   I.wait(BARATConstants.twoSecondWaitTime);
   I.resizeWindow(BARATConstants.windowsSizeX, BARATConstants.windowsSizeY);
 });
-Scenario('FeeClerk Click and Submit', I => {
+Scenario('FeeClerk Click and Submit', { retries: 2 }, I => {
   I.login('barpreprodfeeclerk@mailinator.com', 'LevelAt12');
   I.retry(BARATConstants.retryCountForStep).waitForText('Add payment information', BARATConstants.thirtySecondWaitTime);
   I.click('Add payment information');
@@ -16,7 +16,7 @@ Scenario('FeeClerk Click and Submit', I => {
   I.Logout();
 });
 
-Scenario('Payments Overview', I => {
+Scenario('Payments Overview', { retries: 2 }, I => {
   I.login('barpreprodsrfeeclerk@mailinator.com', 'LevelAt12');
   I.retry(BARATConstants.retryCountForStep).waitForText('Payments overview', BARATConstants.thirtySecondWaitTime);
   I.see('Payments overview');
@@ -30,11 +30,9 @@ Scenario('Payments Overview', I => {
   I.see('Carry forward');
   I.see('Ready to review');
   I.see('Recorded');
-  I.see('Pending transfer');
+  I.see('Pending');
   I.see('Transfer to BAR');
   I.see('Validated');
-  I.see('Recorded');
-  I.see('Pending');
   I.see('Transferred to BAR');
   I.see('Pending Review');
   I.see('Pending Approval');
@@ -45,7 +43,7 @@ Scenario('Payments Pending Review and Approve', I => {
   I.Logout();
 });
 
-Scenario('Payments Pending review', I => {
+Scenario('Payments Pending review', { retries: 2 }, I => {
   I.login('barpreprod@mailinator.com', 'LevelAt12');
   I.retry(BARATConstants.retryCountForStep).waitForText('Payments overview', BARATConstants.thirtySecondWaitTime);
   I.see('Payments overview');

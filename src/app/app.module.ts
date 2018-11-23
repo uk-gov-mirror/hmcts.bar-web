@@ -13,7 +13,6 @@ import {SearchService} from './core/services/search/search.service';
 import {UserService} from './shared/services/user/user.service';
 import {NavigationTrackerService} from './shared/services/navigationtracker/navigation-tracker.service';
 import {UpperCaseFirstPipe} from './core/pipes/upper-case-first.pipe';
-import {NumbersOnlyDirective} from './core/directives/numbers-only.directive';
 import {PaymentStateService} from './shared/services/state/paymentstate.service';
 import {UtilService} from './shared/services/util/util.service';
 import {ApprovedPaymentsComponent} from './core/components/approved-payments/approved-payments.component';
@@ -47,6 +46,7 @@ import {FeatureEditComponent} from './core/components/feature/feature.edit.compo
 import {BarHttpClient} from './shared/services/httpclient/bar.http.client';
 import {PaymentReviewSummaryComponent} from './core/components/payment-review-summary/payment-review-summary.component';
 import {PaymenttypeService} from './core/services/paymenttype/paymenttype.service';
+import { MonitoringService } from './shared/services/appinsights/monitoring.service';
 
 const nonProductionProviders = [{
   provide: HTTP_INTERCEPTORS,
@@ -65,7 +65,6 @@ const nonProductionProviders = [{
     SharedModule
   ],
   declarations: [
-    NumbersOnlyDirective,
     UpperCaseFirstPipe,
     AppComponent,
     ApprovedPaymentsComponent,
@@ -103,6 +102,7 @@ const nonProductionProviders = [{
     SearchService,
     UserService,
     UtilService,
+    MonitoringService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: CurrencyConverterInterceptor,

@@ -70,32 +70,21 @@ describe('NumbersOnlyDirective', () => {
     expect(preventDefaultCalled).toBeFalsy();
   });
 
-  it('should allow ctrl+c ctrl+v ...etc', () => {
+  it('should allow numeric while pasting', () => {
     let preventDefaultCalled = false;
     directive.appNumbersOnly = true;
-    const event = new Event('keypress');
-    // char: 3
-    Object.defineProperty(event, 'keyCode', {'value': 65});
-    Object.defineProperty(event, 'ctrlKey', {'value': true});
-    spyOn(event, 'preventDefault').and.callFake(() => {
+    const e = {
+      clipboardData: {
+        getData(name: string) {
+          return 1234;
+        }
+      },
+      preventDefault: () => {}
+    };
+    spyOn(e, 'preventDefault').and.callFake(() => {
       preventDefaultCalled = true;
     });
-    directive.onKeyDown(event);
-    expect(preventDefaultCalled).toBeFalsy();
-
-    preventDefaultCalled = false;
-    Object.defineProperty(event, 'keyCode', {'value': 67});
-    directive.onKeyDown(event);
-    expect(preventDefaultCalled).toBeFalsy();
-
-    preventDefaultCalled = false;
-    Object.defineProperty(event, 'keyCode', {'value': 86});
-    directive.onKeyDown(event);
-    expect(preventDefaultCalled).toBeFalsy();
-
-    preventDefaultCalled = false;
-    Object.defineProperty(event, 'keyCode', {'value': 88});
-    directive.onKeyDown(event);
-    expect(preventDefaultCalled).toBeFalsy();
+    directive.onPaste(e);
+    expect(e.preventDefault).toHaveBeenCalledTimes(0);
   });
 });

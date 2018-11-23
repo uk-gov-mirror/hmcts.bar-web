@@ -19,6 +19,7 @@ import { UserService } from '../../services/user/user.service';
 import { UserModel } from '../../../core/models/user.model';
 import { mock, instance } from 'ts-mockito';
 import { CheckAndSubmit } from '../../../core/models/check-and-submit';
+import { NumbersOnlyDirective } from '../../directives/numbers-only/numbers-only.directive';
 
 describe('DetailsComponent', () => {
   let component: DetailsComponent;
@@ -74,7 +75,7 @@ describe('DetailsComponent', () => {
   beforeEach(async() => {
     // Prepare the mock modules
     TestBed.configureTestingModule({
-      declarations: [DetailsComponent],
+      declarations: [DetailsComponent, NumbersOnlyDirective],
       imports: [FormsModule, HttpModule, HttpClientModule, RouterModule, RouterTestingModule.withRoutes([])],
     }).overrideComponent(DetailsComponent, {
       set: {
@@ -96,6 +97,8 @@ describe('DetailsComponent', () => {
     paymenttypeService = fixture.debugElement.injector.get(PaymenttypeService);
     paymentslogService = fixture.debugElement.injector.get(PaymentslogService);
     paymentInstructionsService = fixture.debugElement.injector.get(PaymentInstructionsService);
+    component.action = { action: 'Process'};
+    component.searchQuery = 'http://localhost:8080/users/365752/payment-instructions?paymentType=CHEQUE,POSTAL_ORDER&action=Withdraw';
     fixture.detectChanges();
   });
 
@@ -120,6 +123,7 @@ describe('DetailsComponent', () => {
   });
 
   it('should ensure that the element that\'s being checked is actually been checked.', async() => {
+    component.getPaymentInstructions();
     await fixture.whenStable();
     const firstPaymentInstruction = first(component.paymentInstructions$.getValue());
     component.onToggleChecked(firstPaymentInstruction);
@@ -136,7 +140,9 @@ describe('DetailsComponent', () => {
     component.approved = false;
     const checkAndSubmits = [];
     for (let i = 0; i < 3; i++) {
+      const piId = i + 1;
       checkAndSubmits[i] = instance(mock(CheckAndSubmit));
+      checkAndSubmits[i].paymentId = piId;
       checkAndSubmits[i].status =
         (i === 0 ? PaymentStatus.PENDINGAPPROVAL : i === 1 ? PaymentStatus.APPROVED : PaymentStatus.TRANSFERREDTOBAR);
     }

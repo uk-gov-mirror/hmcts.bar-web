@@ -10,6 +10,7 @@ import { FeeDetailModel } from '../../models/feedetail.model';
 import { PaymentAction } from '../../models/paymentaction.model';
 import { PaymentStatus } from '../../models/paymentstatus.model';
 import { PaymentInstructionModel } from '../../models/paymentinstruction.model';
+import { UserService } from '../../../shared/services/user/user.service';
 import { ICaseFeeDetail } from '../../interfaces/payments-log';
 import { IPaymentAction } from '../../interfaces/payment-actions';
 import { UtilService } from '../../../shared/services/util/util.service';
@@ -19,9 +20,10 @@ import {
   UnallocatedAmountEventMessage
 } from './detail/feedetail.event.message';
 import * as _ from 'lodash';
-import { map } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import { IResponse } from '../../interfaces';
 import { Observable } from 'rxjs';
+import { isUndefined } from 'lodash';
 
 @Component({
   selector: 'app-feelogedit',
@@ -37,16 +39,18 @@ export class FeelogeditComponent implements OnInit {
   paymentInstructionActionModel: PaymentInstructionActionModel = new PaymentInstructionActionModel();
 
   refundModalOn = false;
-  returnModalOn = false;
   suspenseModalOn = false;
 
   mainComponentOn = true;
   feeDetailsComponentOn = false;
   delta = new UnallocatedAmountEventMessage(0, 0, 0);
   detailPageType = EditTypes.CREATE;
-  paymentActions$: Observable<IPaymentAction[]>;
-
   jurisdictions = this.createEmptyJurisdiction();
+  isReadOnly = true;
+
+  model$: Observable<PaymentInstructionModel>;
+  paymentActions$: Observable<IPaymentAction[]>;
+  unallocatedAmount$: Observable<number>;
 
   constructor(
     private router: Router,
@@ -54,28 +58,30 @@ export class FeelogeditComponent implements OnInit {
     private paymentLogService: PaymentslogService,
     private feeLogService: FeelogService,
     private location: Location,
-    private paymentActionService: PaymentActionService
+    private paymentActionService: PaymentActionService,
+    private _userService: UserService,
   ) {
     this.model.payment_type = { name: '' };
   }
 
   ngOnInit() {
-    this.route.params.subscribe(params => this.onRouteParams(params));
+    // collect all the necessary properties (from resolve)
+    this.route.data.pipe(pluck('paymentInstructionData'))
+      .subscribe((paymentInstructionData: IResponse[]) => {
+        const [paymentInstruction, unallocatedAmount, features] = paymentInstructionData;
+        const isReadOnly = features.data.find(readOnly => readOnly.uid === 'make-editpage-readonly' && readOnly.enable);
+
+        this.model.assign(paymentInstruction.data);
+        this.model.unallocated_amount = unallocatedAmount.data;
+        this.isReadOnly = isUndefined(isReadOnly)
+          ? false
+          : UtilService.checkIfReadOnly(this.model, this._userService.getUser());
+     });
+
     this.paymentActions$ = this.paymentActionService
       .getPaymentActions()
       .pipe(map((data: IResponse) => data.data));
     this.loadFeeJurisdictions();
-  }
-
-  onRouteParams(params) {
-    if (typeof params.id !== 'undefined') {
-      this.loadedId = params.id;
-      if (/[0-9]/.test(this.loadedId)) {
-        this.loadPaymentInstructionById(this.loadedId);
-      } else {
-        return this.router.navigateByUrl('/paymentslog');
-      }
-    }
   }
 
   createEmptyJurisdiction() {
@@ -114,7 +120,7 @@ export class FeelogeditComponent implements OnInit {
 
     message.feeDetail.payment_instruction_id = this.model.id;
     return this.feeLogService
-      .addEditFeeToCase(this.loadedId, message.feeDetail, method)
+      .addEditFeeToCase(this.model.id.toString(), message.feeDetail, method)
       .then(() => {
         return this.loadPaymentInstructionById(this.model.id);
       })
@@ -123,10 +129,7 @@ export class FeelogeditComponent implements OnInit {
       });
   }
 
-  editTransferedFee(
-    feeDetail: ICaseFeeDetail,
-    originalFeeDetail: ICaseFeeDetail
-  ): Promise<any> {
+  editTransferedFee(feeDetail: ICaseFeeDetail, originalFeeDetail: ICaseFeeDetail): Promise<any> {
     const negatedFeeDetail = this.negateFeeDetail(originalFeeDetail);
 
     // have to set the case_id to null in both post
@@ -134,16 +137,10 @@ export class FeelogeditComponent implements OnInit {
     this.feeDetail.case_fee_id = null;
 
     return this.feeLogService
-      .addEditFeeToCase(this.loadedId, negatedFeeDetail, 'post')
-      .then(() =>
-        this.feeLogService.addEditFeeToCase(this.loadedId, feeDetail, 'post')
-      )
-      .then(() => {
-        return this.loadPaymentInstructionById(this.model.id);
-      })
-      .catch(err => {
-        console.error(err);
-      });
+      .addEditFeeToCase(this.model.id.toString(), negatedFeeDetail, 'post')
+      .then(() => this.feeLogService.addEditFeeToCase(this.loadedId, feeDetail, 'post'))
+      .then(() => this.loadPaymentInstructionById(this.model.id))
+      .catch(err => console.error(err));
   }
 
   negateFeeDetail(feeDetail: ICaseFeeDetail): ICaseFeeDetail {
@@ -163,10 +160,11 @@ export class FeelogeditComponent implements OnInit {
     const p1 = this.paymentLogService.getPaymentById(feeId);
     const p2 = this.paymentLogService.getUnallocatedAmount(feeId);
     Promise.all([p1, p2])
-      .then(responses => {
-        if (responses[0].success && responses[1].success) {
-          this.model.assign(responses[0].data);
-          this.model.unallocated_amount = responses[1].data;
+      .then((responses: IResponse[]) => {
+        const [paymentInstructionModelResponse, unallocatedAmountResponse] = responses;
+        if (paymentInstructionModelResponse.success && unallocatedAmountResponse.success) {
+          this.model.assign(paymentInstructionModelResponse.data);
+          this.model.unallocated_amount = unallocatedAmountResponse.data;
           // this.model.case_fee_details = orderFeeDetails(this.model.case_fee_details);
         } else {
           const errorMessage = responses
@@ -176,9 +174,7 @@ export class FeelogeditComponent implements OnInit {
           throw new Error(errorMessage);
         }
       })
-      .catch(err => {
-        console.error(err);
-      });
+      .catch(err => console.error(err));
   }
 
   async loadFeeJurisdictions() {
@@ -214,6 +210,20 @@ export class FeelogeditComponent implements OnInit {
       : this.mainComponentOn = true;
   }
 
+  onRefund() {
+    this.paymentInstructionActionModel.action = PaymentAction.REFUNDED;
+    this.feeLogService
+      .sendPaymentInstructionAction(this.model, this.paymentInstructionActionModel)
+      .then(() => {
+        this.paymentInstructionActionModel = new PaymentInstructionActionModel();
+        return this.router.navigateByUrl('/feelog');
+      })
+      .catch(err => {
+        this.submitActionError = err.error.data;
+        console.log( this.submitActionError );
+      });
+  }
+
   onProcessPaymentSubmission(model: PaymentInstructionModel) {
     this.paymentInstructionActionModel.action = PaymentAction.PROCESS;
     this.feeLogService
@@ -230,12 +240,9 @@ export class FeelogeditComponent implements OnInit {
 
   onSuspenseFormSubmit(e) {
     e.preventDefault();
-    if (this.paymentInstructionActionModel.hasOwnProperty('reason')) {
+    if (!isUndefined(this.paymentInstructionActionModel.action_reason)) {
       this.feeLogService
-        .sendPaymentInstructionAction(
-          this.model,
-          this.paymentInstructionActionModel
-        )
+        .sendPaymentInstructionAction(this.model, this.paymentInstructionActionModel)
         .then(() => {
           this.paymentInstructionActionModel = new PaymentInstructionActionModel();
           this.suspenseModalOn = !this.suspenseModalOn;
@@ -247,9 +254,9 @@ export class FeelogeditComponent implements OnInit {
 
   onWithdrawPaymentSubmission(): void {
     this.paymentInstructionActionModel.action = PaymentAction.WITHDRAW;
-    this.paymentInstructionActionModel.action_reason = this.model.withdraw_reason;
-    if (this.model.withdraw_comment) {
-      this.paymentInstructionActionModel.action_comment = this.model.withdraw_comment;
+    this.paymentInstructionActionModel.action_reason = this.model.action_reason;
+    if (this.model.action_comment) {
+      this.paymentInstructionActionModel.action_comment = this.model.action_comment;
     }
 
     this.feeLogService
@@ -262,18 +269,19 @@ export class FeelogeditComponent implements OnInit {
   }
 
   returnPaymentToPostClerk() {
-    this.model.status = PaymentStatus.VALIDATED;
-    this.model.action = PaymentAction.RETURNS;
+    this.paymentInstructionActionModel.action = PaymentAction.RETURNS;
+    this.paymentInstructionActionModel.action_reason = this.model.action_reason;
+    if (this.model.action_comment) {
+      this.paymentInstructionActionModel.action_comment = this.model.action_comment;
+    }
 
-    this.feeLogService.updatePaymentModel(this.model).then(res => {
-      this.toggleReturnModal();
-      return this.router.navigateByUrl('/feelog');
-    })
-    .catch(err => {
-      console.log(err);
-      this.submitActionError = err.error.data;
-      this.toggleReturnModal();
-    });
+    this.feeLogService
+      .sendPaymentInstructionAction(this.model, this.paymentInstructionActionModel)
+      .then(() => this.router.navigateByUrl('/feelog'))
+      .catch(err => {
+        console.log(err);
+        this.submitActionError = err.error.data;
+      });
   }
 
   getUnallocatedAmount(): number {
@@ -288,9 +296,7 @@ export class FeelogeditComponent implements OnInit {
   toggleRefundModal() {
     this.refundModalOn = !this.refundModalOn;
   }
-  toggleReturnModal() {
-    this.returnModalOn = !this.returnModalOn;
-  }
+
   toggleSuspenseModal() {
     this.suspenseModalOn = !this.suspenseModalOn;
   }
@@ -299,7 +305,6 @@ export class FeelogeditComponent implements OnInit {
     this.model.action = PaymentAction.REFUNDED;
     this.model.status = PaymentStatus.VALIDATED;
     this.feeLogService.updatePaymentModel(this.model).then(res => {
-      this.toggleReturnModal();
       return this.router.navigateByUrl('/feelog');
     });
   }
@@ -335,33 +340,41 @@ export class FeelogeditComponent implements OnInit {
     this.mainComponentOn = true;
   }
 
-  onSuspensePayment() {
-    this.suspenseModalOn = true;
-  }
-
-  onReturnPayment() {
-    this.returnModalOn = true;
-  }
-
-  onWithdrawPayment() {
-    console.log(this.model);
-    this.model.action = PaymentAction.WITHDRAW;
-    this.model.status = PaymentStatus.VALIDATED;
-    this.feeLogService.updatePaymentModel(this.model).then(res => {
-      this.toggleReturnModal();
-      return this.router.navigateByUrl('/feelog');
-    });
-  }
-
   onPaymentReversion(e: undefined) {
-    const paymentInstructionModel: PaymentInstructionModel = _.clone(
-      this.model
-    );
+    const paymentInstructionModel: PaymentInstructionModel = _.clone(this.model);
     paymentInstructionModel.status = PaymentStatus.getPayment('Pending').code;
 
     this.feeLogService
       .updatePaymentModel(paymentInstructionModel)
       .then(() => (this.model = paymentInstructionModel))
       .catch(console.log);
+  }
+
+  onReturnPayment(): void {
+    this.returnPaymentToPostClerk();
+  }
+
+  onSuspenseDeficiency(): void {
+    this.paymentInstructionActionModel.action = PaymentAction.SUSPENSEDEFICIENCY;
+    this.paymentInstructionActionModel.action_reason = this.model.action_reason;
+    if (this.model.action_comment) {
+      this.paymentInstructionActionModel.action_comment = this.model.action_comment;
+    }
+
+    this.feeLogService
+      .sendPaymentInstructionAction(this.model, this.paymentInstructionActionModel)
+      .then(() => this.router.navigateByUrl('/feelog'))
+      .catch(err => this.submitActionError = err.error.data);
+  }
+
+  onSuspensePayment(): void {
+    this.suspenseModalOn = true;
+  }
+
+  onWithdrawPayment(): void {
+    this.model.action = PaymentAction.WITHDRAW;
+    this.model.status = PaymentStatus.PENDINGAPPROVAL;
+    this.feeLogService.updatePaymentModel(this.model)
+      .then(res => this.router.navigateByUrl('/feelog'));
   }
 }

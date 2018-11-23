@@ -56,7 +56,7 @@ export class PaymentInstructionsService {
         checkAndSubmitModel.convertTo(paymentInstruction, feeModel);
 
         if (feeModel.remission_amount !== null || feeModel.refund_amount !== null) {
-          console.log(feeModel);
+          // console.log(feeModel);
         }
 
         if (models.find(model => model.paymentId === feeModel.payment_instruction_id)) {
@@ -77,6 +77,7 @@ export class PaymentInstructionsService {
     paymentInstructionModel.currency = 'GBP';
     paymentInstructionModel.payment_type = checkAndSubmitModel.paymentType;
     paymentInstructionModel.status = checkAndSubmitModel.status;
+    paymentInstructionModel.action = checkAndSubmitModel.action;
 
     if (!isUndefined(checkAndSubmitModel.bgcNumber)) {
       paymentInstructionModel.bgc_number = checkAndSubmitModel.bgcNumber;

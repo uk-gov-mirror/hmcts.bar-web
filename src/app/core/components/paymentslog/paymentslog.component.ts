@@ -47,9 +47,10 @@ export class PaymentslogComponent implements OnInit {
   }
 
   getPaymentLogs(): void {
+    console.log('Get PaymentLogs with the Payment Status: ' + PaymentStatus.DRAFT);
      this.paymentsLogService.getPaymentsLog(this.userService.getUser(), PaymentStatus.DRAFT)
-      .then((response: IResponse) => {
-        console.log('Response: ' + response.data);
+       .then((response: IResponse) => {
+        console.log('Response: ', response.data);
         this.payments_logs = [];
         response.data.forEach((payment: IPaymentsLog) => {
           const model = new PaymentInstructionModel();

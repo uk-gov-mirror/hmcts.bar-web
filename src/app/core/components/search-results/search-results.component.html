@@ -28,11 +28,11 @@
               <tbody class="bar-feelogs-th" *ngFor="let paymentInstruction of paymentInstructions">
                 <tr class="bar-feelogs-th">
                   <td class="bar-feelogs-td"><a [routerLink]="'/feelog/edit/' + paymentInstruction.getProperty('id')">{{ paymentInstruction.getProperty('daily_sequence_id') }}</a></td>
-                  <td class="bar-feelogs-td">{{ paymentInstruction.getProperty('payment_date') | date:'dd/MMM/yyyy' }}</td>
+                  <td class="bar-feelogs-td">{{ paymentInstruction.getProperty('payment_date') | date:'dd MMM yyyy' }}</td>
                   <td class="bar-feelogs-td">{{ paymentInstruction.getProperty('payer_name') }}</td>
                   <td class="bar-feelogs-td">{{ paymentInstruction.getProperty('payment_type').name }}</td>
                   <td class="bar-feelogs-td">{{ paymentInstruction.getPaymentReference(paymentTypeEnum) }}</td>
-                  <td class="bar-feelogs-td amount">{{ paymentInstruction.getProperty('amount') | currency: paymentInstruction.getProperty('currency'): 2.2 }}</td>
+                  <td class="bar-feelogs-td amount">{{ paymentInstruction.getProperty('amount') | currency: paymentInstruction.getProperty('currency') }}</td>
                   <td class="bar-feelogs-td">{{ paymentInstruction.getProperty('status') }}</td>
                 </tr>
               </tbody>
