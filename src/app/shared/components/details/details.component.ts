@@ -172,9 +172,9 @@ export class DetailsComponent implements OnInit {
 
   private promote(pi: PaymentInstructionModel): PaymentInstructionModel {
     const statuses = [
+      PaymentStatus.getPayment('Pending Review').code,
       PaymentStatus.getPayment('Pending Approval').code,
       PaymentStatus.getPayment('Approved').code,
-      PaymentStatus.getPayment('Transferred To Bar').code,
       PaymentStatus.getPayment('Completed').code
     ];
     const actions = [PaymentAction.WITHDRAW, PaymentAction.RETURNS];

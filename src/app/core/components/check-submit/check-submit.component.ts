@@ -96,7 +96,7 @@ export class CheckSubmitComponent implements OnInit {
       .filter(model => !!model.paymentId)
       .map((paymentInstructionModel: any) => {
         paymentInstructionModel = this._paymentsInstructionService.transformIntoPaymentInstructionModel(paymentInstructionModel);
-        paymentInstructionModel.status = PaymentStatus.getPayment('Pending Approval').code;
+        paymentInstructionModel.status = PaymentStatus.getPayment('Pending Review').code;
         return this._paymentsInstructionService.savePaymentInstruction(paymentInstructionModel);
       });
 

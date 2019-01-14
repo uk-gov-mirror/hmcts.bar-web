@@ -21,7 +21,7 @@ describe('StatsComponent', () => {
   let callbackSpy: any;
   const mockActivatedRoute = {
     params: of({ id: 1 }),
-    queryParams: of({ status: PaymentStatus.getPayment('Approved').code, fullName: 'Joseph' })
+    queryParams: of({ status: PaymentStatus.getPayment('Pending Approval').code, fullName: 'Joseph' })
   };
 
   beforeEach(() => {

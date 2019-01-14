@@ -26,7 +26,7 @@ import { Observable } from 'rxjs';
 const MockActivatedRoute = {
   params: of({ id: 1 }),
   queryParams: of({
-    status: PaymentStatus.getPayment('Approved').code,
+    status: PaymentStatus.getPayment('Pending Approval').code,
     paymentType: 'cash'
   })
 };
@@ -124,12 +124,12 @@ describe('PaymentReviewComponent', () => {
 
     component.onSubmission('approve', 'bgc123');
     expect(saveParam.status).toEqual(
-      PaymentStatus.getPayment('Approved').code
+      PaymentStatus.getPayment('Pending Approval').code
     );
 
     component.onSubmission('transferredtobar');
     expect(saveParam.status).toEqual(
-      PaymentStatus.getPayment('Transferred To Bar').code
+      PaymentStatus.getPayment('TApproved').code
     );
   });
 
@@ -165,7 +165,7 @@ describe('PaymentReviewComponent', () => {
     const siteCode = '31';
     await component.onSubmission('approve', (siteCode.concat(bgcNumber)));
     expect(saveParam.status).toEqual(
-      PaymentStatus.getPayment('Approved').code
+      PaymentStatus.getPayment('Pending Approval').code
     );
     expect(saveParam.bgc_number).toEqual(siteCode.concat(bgcNumber));
   });

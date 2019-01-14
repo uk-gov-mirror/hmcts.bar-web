@@ -27,17 +27,10 @@ export class NavigationComponent implements OnInit {
   todaysDate = Date.now();
   name = '';
   advancedSearchedOpen = false;
-  allStatuses = [
-    PaymentStatus.PENDING,
-    PaymentStatus.PENDINGAPPROVAL,
-    PaymentStatus.APPROVED,
-    PaymentStatus.VALIDATED,
-    PaymentStatus.TRANSFERREDTOBAR,
-    PaymentStatus.REJECTED,
-    PaymentStatus.COMPLETED
-  ];
+  allStatuses = PaymentStatus.getAllCodes();
   paymentTypes$: Observable<IPaymentType[]>;
   dateFromMax = moment().format('YYYY-MM-DD');
+  statuses = PaymentStatus.list;
 
   constructor(
     private userService: UserService,
@@ -53,7 +46,7 @@ export class NavigationComponent implements OnInit {
     this.paymentTypes$ = this._paymentState.paymentTypes$;
     this.searchModel.action = '';
     this.searchModel.paymentType = '';
-    this.searchModel.status = 'P,PA,A,V,TTB,REJ,C';
+    this.searchModel.status = PaymentStatus.getAllCodes().join(',');
   }
 
   get endDate(): string {

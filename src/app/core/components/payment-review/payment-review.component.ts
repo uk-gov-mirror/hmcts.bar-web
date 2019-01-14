@@ -134,10 +134,10 @@ export class PaymentReviewComponent implements OnInit {
         continue;
       }
       if (type === 'approve') {
-        paymentInstructionModel.status = PaymentStatus.getPayment('Approved').code;
+        paymentInstructionModel.status = PaymentStatus.getPayment('Pending Approval').code;
       }
       if (type === 'transferredtobar') {
-        paymentInstructionModel.status = PaymentStatus.getPayment('Transferred To Bar').code;
+        paymentInstructionModel.status = PaymentStatus.getPayment('Approved').code;
       }
       if (this.isBgcNeeded(paymentInstructionModel.payment_type.id) && type === 'approve') {
         if (bgcNumber) {
@@ -239,7 +239,7 @@ export class PaymentReviewComponent implements OnInit {
   }
 
   isStatusUndefinedOrPA() {
-    return this.status === undefined || this.status === PaymentStatus.getPayment('Pending Approval').code;
+    return this.status === undefined || this.status === PaymentStatus.getPayment('Pending Review').code;
   }
 
   private isBgcNeeded(typeId: string) {

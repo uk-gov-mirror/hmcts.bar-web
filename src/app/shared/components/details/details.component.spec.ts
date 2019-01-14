@@ -34,13 +34,13 @@ describe('DetailsComponent', () => {
       parent: {},
       params: of({ id: 1 }),
       queryParams: of({
-        status: PaymentStatus.getPayment('Approved').code,
+        status: PaymentStatus.getPayment('Pending Approval').code,
         paymentType: 'cash'
       })
     },
     params: of({ id: 1 }),
     queryParams: of({
-      status: PaymentStatus.getPayment('Approved').code,
+      status: PaymentStatus.getPayment('Pending Approval').code,
       paymentType: 'cash'
     })
   };

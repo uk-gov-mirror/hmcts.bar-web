@@ -1,14 +1,14 @@
 export class PaymentStatus {
   static list = [
-    { label: 'Approved', code: 'A' },
-    { label: 'Completed', code: 'C' },
     { label: 'Draft', code: 'D' },
     { label: 'Pending', code: 'P' },
-    { label: 'Pending Approval', code: 'PA' },
+    { label: 'Pending Review', code: 'PA' },
+    { label: 'Validated', code: 'V' },
+    { label: 'Pending Approval', code: 'A' },
+    { label: 'Approved', code: 'TTB' },
+    { label: 'Completed', code: 'C' },
     { label: 'Rejected', code: 'REJ' },
-    { label: 'Rejected by DM', code: 'RDM' },
-    { label: 'Transferred To Bar', code: 'TTB' },
-    { label: 'Validated', code: 'V' }
+    { label: 'Rejected by DM', code: 'RDM' }
   ];
 
   // make this redundant - gradually
@@ -27,6 +27,18 @@ export class PaymentStatus {
     if (paymentStatus.length > 0) {
       return paymentStatus[0];
     }
+  }
+
+  static getAllCodes() {
+    return this.list.map(item => {
+      return item.code;
+    });
+  }
+
+  static getAllLabels() {
+    return this.list.map(item => {
+      return item.code;
+    });
   }
 
 }
