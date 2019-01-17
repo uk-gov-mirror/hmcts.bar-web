@@ -23,8 +23,10 @@ export interface IPaymentsLog {
   site_id: string;
   status: PaymentStatus;
   unallocated_amount?: number;
+  statusLabel: string;
 
   getProperty(property: string);
+
 }
 
 export interface IPaymentType {

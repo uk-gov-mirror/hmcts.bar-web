@@ -33,7 +33,7 @@
                   <td class="bar-feelogs-td">{{ paymentInstruction.getProperty('payment_type').name }}</td>
                   <td class="bar-feelogs-td">{{ _paymentInstructionService.getPaymentReference(paymentInstruction) | async }}</td>
                   <td class="bar-feelogs-td amount">{{ paymentInstruction.amount | formatPound: true }}</td>
-                  <td class="bar-feelogs-td">{{ paymentInstruction.getProperty('status') }}</td>
+                  <td class="bar-feelogs-td">{{ paymentInstruction.statusLabel }}</td>
                 </tr>
               </tbody>
             </table>

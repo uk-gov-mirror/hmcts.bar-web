@@ -211,7 +211,6 @@ describe('Test: PaymentsLogController', () => {
       .expect(httpStatusCodes.OK)
       .expect(res => {
         const { body } = res;
-
         // ensure that i receive the right data back
         expect(body).to.have.property('success');
         expect(body).to.have.property('data');

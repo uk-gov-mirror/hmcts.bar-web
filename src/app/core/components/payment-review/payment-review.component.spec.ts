@@ -129,7 +129,7 @@ describe('PaymentReviewComponent', () => {
 
     component.onSubmission('transferredtobar');
     expect(saveParam.status).toEqual(
-      PaymentStatus.getPayment('TApproved').code
+      PaymentStatus.getPayment('Approved').code
     );
   });
 

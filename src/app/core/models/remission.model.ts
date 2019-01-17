@@ -22,12 +22,17 @@ export class RemissionModel implements IPaymentsLog {
   postal_order_number?: string;
   selected?: boolean;
   site_id: string;
-  status: PaymentStatus;
+  status: string;
   unallocated_amount?: number;
   remission_reference = '';
 
   getProperty(property: string) {
     throw new Error('Method not implemented.');
+  }
+
+  get statusLabel(): string {
+    const paymentStatus = PaymentStatus.getPayment(this.status);
+    return paymentStatus ? paymentStatus.label : this.status;
   }
 
 }

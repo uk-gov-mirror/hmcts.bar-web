@@ -6,6 +6,7 @@ import { WithdrawReasonModel } from './withdrawreason.model';
 import { ReturnReasonModel } from './returnreason.model';
 import { isUndefined } from 'lodash';
 import { ICheckAndSubmit } from '../interfaces/check-and-submit';
+import { PaymentStatus } from './paymentstatus.model';
 
 export class PaymentInstructionModel extends PaymentParent implements IPaymentsLog, ICheckAndSubmit {
   action: string;
@@ -33,6 +34,11 @@ export class PaymentInstructionModel extends PaymentParent implements IPaymentsL
 
   set paymentId(id: number) {
     this.id = id;
+  }
+
+  get statusLabel(): string {
+    const paymentStatus = PaymentStatus.getPayment(this.status);
+    return paymentStatus ? paymentStatus.label : this.status;
   }
 
   assign(data) {

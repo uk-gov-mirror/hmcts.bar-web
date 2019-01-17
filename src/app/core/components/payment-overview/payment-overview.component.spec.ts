@@ -195,8 +195,14 @@ describe('PaymentOverviewComponent', () => {
     component.status = 'A';
     component.seniorFeeClerks = [];
     component.createRejectStatsOverview(JSON.parse(clerkData));
+    console.log(component.feeClerks);
     expect(component.feeClerks.length).toBeGreaterThan(0);
     expect(component.feeClerks[0].readyToReview).toBe(1);
+    expect(component.feeClerks[0].piLink).toBe('/users/365751/payment-instructions/stats');
+    expect(component.feeClerks[0].queryParams.old_status).toBe('A');
+    expect(component.feeClerks[0].queryParams.status).toBe('RDM');
+    expect(component.feeClerks[0].userFullName).toBe('Karen Taylor');
+    expect(component.feeClerks[0].queryParams.fullName).toBe('Karen Taylor');
     expect(component.feeClerks[1].readyToReview).toBe(2);
     expect(component.feeClerks[2].readyToReview).toBe(1);
   });

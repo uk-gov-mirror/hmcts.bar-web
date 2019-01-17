@@ -8,7 +8,7 @@ export class PaymentStatus {
     { label: 'Approved', code: 'TTB' },
     { label: 'Completed', code: 'C' },
     { label: 'Rejected', code: 'REJ' },
-    { label: 'Rejected by DM', code: 'RDM' }
+    { label: 'Rejected By Approver', code: 'RDM' }
   ];
 
   // make this redundant - gradually
