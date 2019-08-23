@@ -41,6 +41,7 @@
     "test:coverage": "yarn merge-lcov && yarn copy-lcov",
     "sonar-scan": "sonar-scanner",
     "delete:output-folders": "rm -rf output/ && rm -rf acceptance-tests/output/",
+
     "prebuild": "npm rebuild node-sass"
   },
   "private": true,
