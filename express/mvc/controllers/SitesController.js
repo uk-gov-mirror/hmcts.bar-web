@@ -6,8 +6,9 @@ class SitesController {
    * @param {SitesService} sitesService
    * @memberof SitesController
    */
-  constructor(sitesService) {
+  constructor(sitesService, registrationService) {
     this.sitesService = sitesService;
+    this.registrationService = registrationService;
     this.getSites = this.getSites.bind(this);
     this.getSite = this.getSite.bind(this);
     this.addUserToSite = this.addUserToSite.bind(this);
@@ -35,11 +36,22 @@ class SitesController {
   }
 
   addUserToSite(req, res) {
-    return this.sitesService.addUserToSite(req)
+    let registrationError = null;
+    return this.registrationService.registerUser(req)
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.log(error);
+        registrationError = error.body ? error.body : error.message;
+      })
+      .then(() => this.sitesService.addUserToSite(req))
       .then(data => {
-        res.status(data.response.statusCode).send(data.body);
+        const resp = data.body || {};
+        resp.registrationError = registrationError;
+        res.status(data.response.statusCode).send(resp);
       })
       .catch(err => {
+        // eslint-disable-next-line no-console
+        console.log(err);
         errorHandler(res, err, 'SitesController.js');
       });
   }

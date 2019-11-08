@@ -11,6 +11,7 @@ const describe = mocha.describe,
   beforeEach = mocha.beforeEach;
 
 let sitesService = null;
+let registrationService = null;
 let sitesController = null;
 let req = {}, res = {};
 let error = {};
@@ -19,8 +20,9 @@ let error = {};
 describe('Test: SitesController', () => {
   beforeEach(() => {
     sitesService = {};
-    sitesController = new SitesController(sitesService);
-    req = { query: { code: '' }, params: { email: 'mock@email.com' } };
+    registrationService = { registerUser: () => Promise.resolve('') };
+    sitesController = new SitesController(sitesService, registrationService);
+    req = { query: { code: '' }, params: { email: 'mock@email.com' }, body: { email: 'mock@email.com' } };
     res = {
       message: '',
       statusCode: '',
@@ -86,7 +88,7 @@ describe('Test: SitesController', () => {
 
   it('Test addUserToSite: success', async() => {
     const respData = {
-      body: '',
+      body: {},
       response: { statusCode: httpStatusCodes.OK }
     };
 

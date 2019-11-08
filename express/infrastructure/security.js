@@ -17,7 +17,8 @@ const constants = Object.freeze({
   SECURITY_COOKIE: '__auth-token',
   REDIRECT_COOKIE: '__redirect',
   USER_COOKIE: '__user-info',
-  SITEID_COOKIE: '__site-id'
+  SITEID_COOKIE: '__site-id',
+  SCOPE_COOKIE: '__user_scope'
 });
 
 const ACCESS_TOKEN_OAUTH2 = 'access_token';
@@ -35,6 +36,10 @@ function Security(options) {
 /* --- INTERNAL --- */
 
 function addOAuth2Parameters(url, state, self, req) {
+  const scope = req.cookies[constants.SCOPE_COOKIE];
+  if (scope) {
+    url.query.scope = scope;
+  }
   url.query.response_type = 'code';
   url.query.state = state;
   url.query.client_id = self.opts.clientId;
@@ -102,6 +107,13 @@ function getTokenFromCode(self, req) {
     .send({ redirect_uri: `https://${req.get('host')}${self.opts.redirectUri}` });
 }
 
+function invalidateToken(self, req) {
+  const url = URL.parse(`${self.opts.apiUrl}/session/${req.cookies[constants.SECURITY_COOKIE]}`, true);
+
+  return request.delete(url.format())
+    .auth(self.opts.clientId, self.opts.clientSecret);
+}
+
 function getUserDetails(self, securityCookie) {
   const value = self.cache.get(self.opts.userDetailsKeyPrefix + securityCookie);
   if (value) {
@@ -149,20 +161,22 @@ function handleCookie(req) {
 Security.prototype.logout = function logout() {
   const self = { opts: this.opts, cache: this.cache };
 
-  // eslint-disable-next-line no-unused-vars
-  return function ret(req, res, next) {
-    const token = req.cookies[constants.SECURITY_COOKIE];
+  return function ret(req, res) {
+    return invalidateToken(self, req).end(err => {
+      if (err) {
+        Logger.getLogger('BAR-WEB: security.js').error(err);
+      }
 
-    res.clearCookie(constants.SECURITY_COOKIE);
-    res.clearCookie(constants.REDIRECT_COOKIE);
-    res.clearCookie(constants.USER_COOKIE);
-
-    if (token) {
-      self.cache.del(token);
-      res.redirect(`${self.opts.loginUrl}/logout?jwt=${token}`);
-    } else {
-      res.redirect(`${self.opts.loginUrl}/logout`);
-    }
+      const token = req.cookies[constants.SECURITY_COOKIE];
+      res.clearCookie(constants.SECURITY_COOKIE);
+      res.clearCookie(constants.REDIRECT_COOKIE);
+      res.clearCookie(constants.USER_COOKIE);
+      res.clearCookie(constants.SCOPE_COOKIE);
+      if (token) {
+        self.cache.del(token);
+      }
+      res.redirect('/');
+    });
   };
 };
 

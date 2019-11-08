@@ -16,6 +16,7 @@ import * as moment from 'moment';
 import {SitesService} from '../../services/sites/sites.service';
 import {SitesModel} from '../../../core/models/sites.model';
 import {HostBasedGuardService} from '../../services/auth/host-based-guard.service';
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -157,8 +158,10 @@ export class NavigationComponent implements OnInit {
   }
 
   logout() {
-    this.userService.logOut();
-    document.location.href = '/logout';
+    if (!environment.production) {
+      this.userService.logOut();
+    }
+    this.navigateToLogout();
   }
 
   toggleAdvancedSearch() {
@@ -176,6 +179,10 @@ export class NavigationComponent implements OnInit {
 
   formatBackDate(date: string): string {
     return date ? moment(date, 'DDMMYYYY').format('YYYY-MM-DD') : date;
+  }
+
+  navigateToLogout() {
+    document.location.href = '/logout';
   }
 
 }
