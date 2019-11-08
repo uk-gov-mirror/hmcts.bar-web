@@ -53,8 +53,8 @@ export class SiteAdminComponent implements OnInit {
       // alert(scope);
       if (!scope && isFeatureOn) {
         this._http.get('/api/invalidate-token').subscribe(resp => {
-          this._cookieService.set(UserService.USER_SCOPE_COOKIE, 'create-user');
           this._userService.logOut();
+          this._cookieService.set(UserService.USER_SCOPE_COOKIE, 'create-user');
           window.location.href = '/user-admin';
         });
       } else {
