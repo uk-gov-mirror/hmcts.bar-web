@@ -50,7 +50,6 @@ export class SiteAdminComponent implements OnInit {
     this._featureService.findAllFeatures().subscribe(features => {
       const isFeatureOn = this.isRegistrationFeatureTurnedOn(features);
       this.registrationFeatureEnabled = isFeatureOn;
-      // alert(scope);
       if (!scope && isFeatureOn) {
         this._http.get('/api/invalidate-token').subscribe(resp => {
           this._userService.logOut();
