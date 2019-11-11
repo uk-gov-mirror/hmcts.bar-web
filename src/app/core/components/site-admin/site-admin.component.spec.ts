@@ -46,20 +46,16 @@ describe('SiteAdminComponent', () => {
     siteService = fixture.debugElement.injector.get(SitesService);
     fixture.detectChanges();
     let calledWithParam;
-    spyOn(BarHttpClient.prototype, 'get').and.callFake(param => {
-      calledWithParam = param;
-      return of({ data: [], success: true });
-    });
+    spyOn(BarHttpClient.prototype, 'get');
     spyOn(CookieService.prototype, 'get').and.returnValue('');
     spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
-    spyOn(UserService.prototype, 'logOut').and.callThrough();
+    spyOn(UserService.prototype, 'logOut');
     const key = '__user_scope';
     const value = '';
     CookieService.prototype.set(key, value);
-    expect(FeatureService.prototype).toBeFalsy();
+    expect(FeatureService.prototype).toBeNull();
     expect(CookieService.prototype.get('create-user')).toBe('');
     expect(BarHttpClient.prototype.get).toHaveBeenCalledTimes(1);
-    expect(BarHttpClient.prototype).toHaveBeenCalledTimes(1);
     expect(UserService.prototype.logOut).toHaveBeenCalledTimes(1);
     });
 
