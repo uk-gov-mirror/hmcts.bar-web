@@ -45,7 +45,6 @@ describe('SiteAdminComponent', () => {
     component = fixture.componentInstance;
     siteService = fixture.debugElement.injector.get(SitesService);
     fixture.detectChanges();
-    let calledWithParam;
     spyOn(BarHttpClient.prototype, 'get');
     spyOn(CookieService.prototype, 'get').and.returnValue('');
     spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
