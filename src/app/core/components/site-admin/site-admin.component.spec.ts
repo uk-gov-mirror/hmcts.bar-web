@@ -22,7 +22,6 @@ describe('SiteAdminComponent', () => {
   let component: SiteAdminComponent;
   let fixture: ComponentFixture<SiteAdminComponent>;
   let siteService: SitesService;
-  let CookieService: CookieService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,13 +45,24 @@ describe('SiteAdminComponent', () => {
     component = fixture.componentInstance;
     siteService = fixture.debugElement.injector.get(SitesService);
     fixture.detectChanges();
-  });
-
-  it('should set and get a simple cookie', () => {
-    let key = '__user_scope';
-    let value = 'create-user';
-    CookieService.set(key, value);
-    expect(CookieService.get(key)).toBe(value);
+    let calledWithParam;
+    spyOn(BarHttpClient.prototype, 'get').and.callFake(param => {
+      calledWithParam = param;
+      return of({ data: [], success: true });
+    });
+    spyOn(CookieService, 'get').and.returnValue('');
+    spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
+    spyOn(UserService.prototype, 'logOut').and.callThrough();
+    const key = '__user_scope';
+    const value = '';
+    CookieService.set(key, value); 
+    expect(FeatureService.prototype).toBeFalsy();
+    expect(CookieService.get('create-user')).toBe('');
+    expect(BarHttpClient.prototype.get).toHaveBeenCalledTimes(1)
+    .then( data =>{
+      expect(BarHttpClient.prototype).toHaveBeenCalledTimes(1);
+      expect(UserService.prototype.logOut).toHaveBeenCalledTimes(1);
+    });
   });
 
   it('should display emails assigned to site', async() => {
