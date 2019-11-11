@@ -22,8 +22,6 @@ describe('SiteAdminComponent', () => {
   let component: SiteAdminComponent;
   let fixture: ComponentFixture<SiteAdminComponent>;
   let siteService: SitesService;
-  let barHttpClient1: BarHttpClient;
-  let userService1: UserService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -51,7 +49,8 @@ describe('SiteAdminComponent', () => {
 
   it('test http get', () => {
     let calledWithParam : any;
-    spyOn(barHttpClient1, 'get').and.callFake(param => {
+    const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
+    spyOn(barHttpClient, 'get').and.callFake(param => {
     calledWithParam = param;
       return {
         toPromise: () => {
@@ -63,19 +62,21 @@ describe('SiteAdminComponent', () => {
   });
 
   it('should test when feature is turned off', async() => {
+    const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
+    const userService = fixture.debugElement.injector.get(UserService);
     await fixture.whenStable();
     fixture.detectChanges();
     const key = '__user_scope';
     const value = '';
     CookieService.prototype.set(key, value);
-    spyOn(barHttpClient1, 'get').and.callThrough();
+    spyOn(barHttpClient, 'get').and.callThrough();
     spyOn(CookieService.prototype, 'get').and.returnValue('');
     spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
-    spyOn(userService1, 'logOut').and.callThrough();
+    spyOn(userService, 'logOut').and.callThrough();
     expect(FeatureService.prototype.isFeatureEnabled).toBeFalsy();
     expect(CookieService.prototype.get('create-user')).toBe('');
-    expect(barHttpClient1.get).toHaveBeenCalled();
-    expect(userService1.logOut).toHaveBeenCalled();
+    expect(barHttpClient.get).toHaveBeenCalled();
+    expect(userService.logOut).toHaveBeenCalled();
   });
 
   it('should display emails assigned to site', async() => {
