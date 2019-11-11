@@ -50,16 +50,16 @@ describe('SiteAdminComponent', () => {
       calledWithParam = param;
       return of({ data: [], success: true });
     });
-    spyOn(CookieService, 'get').and.returnValue('');
+    spyOn(CookieService.prototype, 'get').and.returnValue('');
     spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
     spyOn(UserService.prototype, 'logOut').and.callThrough();
     const key = '__user_scope';
     const value = '';
-    CookieService.set(key, value); 
+    CookieService.prototype.set(key, value); 
     expect(FeatureService.prototype).toBeFalsy();
-    expect(CookieService.get('create-user')).toBe('');
+    expect(CookieService.prototype.get('create-user')).toBe('');
     expect(BarHttpClient.prototype.get).toHaveBeenCalledTimes(1)
-    .then( data =>{
+    .then( data => {
       expect(BarHttpClient.prototype).toHaveBeenCalledTimes(1);
       expect(UserService.prototype.logOut).toHaveBeenCalledTimes(1);
     });
