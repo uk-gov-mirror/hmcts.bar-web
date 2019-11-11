@@ -58,12 +58,10 @@ describe('SiteAdminComponent', () => {
     CookieService.prototype.set(key, value);
     expect(FeatureService.prototype).toBeFalsy();
     expect(CookieService.prototype.get('create-user')).toBe('');
-    expect(BarHttpClient.prototype.get).toHaveBeenCalledTimes(1)
-    .then( data => {
-      expect(BarHttpClient.prototype).toHaveBeenCalledTimes(1);
-      expect(UserService.prototype.logOut).toHaveBeenCalledTimes(1);
+    expect(BarHttpClient.prototype.get).toHaveBeenCalledTimes(1);
+    expect(BarHttpClient.prototype).toHaveBeenCalledTimes(1);
+    expect(UserService.prototype.logOut).toHaveBeenCalledTimes(1);
     });
-  });
 
   it('should display emails assigned to site', async() => {
     await fixture.whenStable();
