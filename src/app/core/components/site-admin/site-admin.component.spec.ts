@@ -45,18 +45,23 @@ describe('SiteAdminComponent', () => {
     component = fixture.componentInstance;
     siteService = fixture.debugElement.injector.get(SitesService);
     fixture.detectChanges();
+    });
+
+  it('should test when feature is turned off', async() => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    const key = '__user_scope';
+    const value = '';
+    CookieService.prototype.set(key, value);
     spyOn(BarHttpClient.prototype, 'get');
     spyOn(CookieService.prototype, 'get').and.returnValue('');
     spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
     spyOn(UserService.prototype, 'logOut');
-    const key = '__user_scope';
-    const value = '';
-    CookieService.prototype.set(key, value);
     expect(FeatureService.prototype).toBeNull();
     expect(CookieService.prototype.get('create-user')).toBe('');
-    expect(BarHttpClient.prototype.get).toHaveBeenCalledTimes(1);
-    expect(UserService.prototype.logOut).toHaveBeenCalledTimes(1);
-    });
+    expect(BarHttpClient.prototype.get).toHaveBeenCalled();
+    expect(UserService.prototype.logOut).toHaveBeenCalled();
+  });
 
   it('should display emails assigned to site', async() => {
     await fixture.whenStable();
