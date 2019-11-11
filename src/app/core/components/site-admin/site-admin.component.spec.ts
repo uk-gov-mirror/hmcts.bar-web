@@ -22,6 +22,8 @@ describe('SiteAdminComponent', () => {
   let component: SiteAdminComponent;
   let fixture: ComponentFixture<SiteAdminComponent>;
   let siteService: SitesService;
+  let barHttpClient1: BarHttpClient;
+  let userService1: UserService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -48,8 +50,8 @@ describe('SiteAdminComponent', () => {
     });
 
   it('test http get', () => {
-    let calledWithParam;
-    spyOn(BarHttpClient.prototype, 'get').and.callFake(param => {
+    let calledWithParam : any;
+    spyOn(barHttpClient1, 'get').and.callFake(param => {
     calledWithParam = param;
       return {
         toPromise: () => {
@@ -66,14 +68,14 @@ describe('SiteAdminComponent', () => {
     const key = '__user_scope';
     const value = '';
     CookieService.prototype.set(key, value);
-    spyOn(BarHttpClient.prototype, 'get').and.callThrough();
+    spyOn(barHttpClient1, 'get').and.callThrough();
     spyOn(CookieService.prototype, 'get').and.returnValue('');
     spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
-    spyOn(UserService.prototype, 'logOut').and.callThrough();
+    spyOn(userService1, 'logOut').and.callThrough();
     expect(FeatureService.prototype.isFeatureEnabled).toBeFalsy();
     expect(CookieService.prototype.get('create-user')).toBe('');
-    expect(BarHttpClient.prototype.get).toHaveBeenCalled();
-    expect(UserService.prototype.logOut).toHaveBeenCalled();
+    expect(barHttpClient1.get).toHaveBeenCalled();
+    expect(userService1.logOut).toHaveBeenCalled();
   });
 
   it('should display emails assigned to site', async() => {
