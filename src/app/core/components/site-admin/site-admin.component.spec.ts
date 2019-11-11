@@ -48,7 +48,7 @@ describe('SiteAdminComponent', () => {
     });
 
   it('test http get', () => {
-    let calledWithParam : any;
+    let calledWithParam: any;
     const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
     spyOn(barHttpClient, 'get').and.callFake(param => {
     calledWithParam = param;
