@@ -22,6 +22,7 @@ describe('SiteAdminComponent', () => {
   let component: SiteAdminComponent;
   let fixture: ComponentFixture<SiteAdminComponent>;
   let siteService: SitesService;
+  let CookieService: CookieService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -45,6 +46,13 @@ describe('SiteAdminComponent', () => {
     component = fixture.componentInstance;
     siteService = fixture.debugElement.injector.get(SitesService);
     fixture.detectChanges();
+  });
+
+  it('should set and get a simple cookie', () => {
+    let key = '__user_scope';
+    let value = 'create-user';
+    CookieService.set(key, value);
+    expect(CookieService.get(key)).toBe(value);
   });
 
   it('should display emails assigned to site', async() => {
