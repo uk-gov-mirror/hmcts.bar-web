@@ -47,6 +47,15 @@ describe('SiteAdminComponent', () => {
     fixture.detectChanges();
     });
 
+  it('check if a feature is disabled', done => {
+      const featureService = fixture.debugElement.injector.get(FeatureService);
+      featureService.isFeatureEnabled('register-user-idam')
+        .subscribe(result => {
+          expect(result).toBeTruthy();
+          done();
+      });
+  });  
+
   it('test http get', () => {
     let calledWithParam: any;
     const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
@@ -58,25 +67,33 @@ describe('SiteAdminComponent', () => {
           }
         };
       });
-    expect(calledWithParam).toBe('/api/invalidate-token');
+    expect(calledWithParam).toBeUndefined();
   });
 
-  it('should test when feature is turned off', async() => {
+  it('should test when feature is turned on', async done => {
     const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
     const userService = fixture.debugElement.injector.get(UserService);
-    await fixture.whenStable();
-    fixture.detectChanges();
-    const key = '__user_scope';
-    const value = '';
-    CookieService.prototype.set(key, value);
-    spyOn(barHttpClient, 'get').and.callThrough();
-    spyOn(CookieService.prototype, 'get').and.returnValue('');
-    spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
-    spyOn(userService, 'logOut').and.callThrough();
-    expect(FeatureService.prototype.isFeatureEnabled).toBeFalsy();
-    expect(CookieService.prototype.get('create-user')).toBe('');
-    expect(barHttpClient.get).toHaveBeenCalled();
-    expect(userService.logOut).toHaveBeenCalled();
+    const featureService = fixture.debugElement.injector.get(FeatureService);
+    featureService.isFeatureEnabled('register-user-idam')
+      .subscribe(result => {
+      expect(result).toBeTruthy();
+      expect(barHttpClient.get).toHaveBeenCalled();
+      expect(userService.logOut).toHaveBeenCalled();
+      done();
+    });
+    // await fixture.whenStable();
+    // fixture.detectChanges();
+    // const key = '__user_scope';
+    // const value = '';
+    // CookieService.prototype.set(key, value);
+    // spyOn(barHttpClient, 'get').and.callThrough();
+    // spyOn(CookieService.prototype, 'get').and.returnValue('');
+    // spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
+    // spyOn(userService, 'logOut').and.callThrough();
+    // expect(FeatureService.prototype.isFeatureEnabled).toBeFalsy();
+    // expect(CookieService.prototype.get('create-user')).toBe('');
+    // expect(barHttpClient.get).toHaveBeenCalled();
+    // expect(userService.logOut).toHaveBeenCalled();
   });
 
   it('should display emails assigned to site', async() => {
