@@ -47,17 +47,30 @@ describe('SiteAdminComponent', () => {
     fixture.detectChanges();
     });
 
+  it('test http get', () => {
+    let calledWithParam;
+    spyOn(BarHttpClient.prototype, 'get').and.callFake(param => {
+    calledWithParam = param;
+      return {
+        toPromise: () => {
+          Promise.resolve(true);
+          }
+        };
+      });
+    expect(calledWithParam).toBe('/api/invalidate-token');
+  });
+
   it('should test when feature is turned off', async() => {
     await fixture.whenStable();
     fixture.detectChanges();
     const key = '__user_scope';
     const value = '';
     CookieService.prototype.set(key, value);
-    spyOn(BarHttpClient.prototype, 'get');
+    spyOn(BarHttpClient.prototype, 'get').and.callThrough();
     spyOn(CookieService.prototype, 'get').and.returnValue('');
     spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
-    spyOn(UserService.prototype, 'logOut');
-    expect(FeatureService.prototype).toBeNull();
+    spyOn(UserService.prototype, 'logOut').and.callThrough();
+    expect(FeatureService.prototype.isFeatureEnabled).toBeFalsy();
     expect(CookieService.prototype.get('create-user')).toBe('');
     expect(BarHttpClient.prototype.get).toHaveBeenCalled();
     expect(UserService.prototype.logOut).toHaveBeenCalled();
