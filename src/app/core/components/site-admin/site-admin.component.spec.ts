@@ -54,21 +54,21 @@ describe('SiteAdminComponent', () => {
           expect(result).toBeTruthy();
           done();
       });
-  });  
-
-  it('test http get', () => {
-    let calledWithParam: any;
-    const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
-    spyOn(barHttpClient, 'get').and.callFake(param => {
-    calledWithParam = param;
-      return {
-        toPromise: () => {
-          Promise.resolve(true);
-          }
-        };
-      });
-    expect(calledWithParam).toBeUndefined();
   });
+
+  // it('test http get', () => {
+  //   let calledWithParam: any;
+  //   const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
+  //   spyOn(barHttpClient, 'get').and.callFake(param => {
+  //   calledWithParam = param;
+  //     return {
+  //       toPromise: () => {
+  //         Promise.resolve(true);
+  //         }
+  //       };
+  //     });
+  //   expect(calledWithParam).toBeUndefined();
+  // });
 
   it('should test when feature is turned on', async done => {
     const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
