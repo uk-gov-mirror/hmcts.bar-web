@@ -55,7 +55,7 @@ describe('SiteAdminComponent', () => {
     spyOn(UserService.prototype, 'logOut').and.callThrough();
     const key = '__user_scope';
     const value = '';
-    CookieService.prototype.set(key, value); 
+    CookieService.prototype.set(key, value);
     expect(FeatureService.prototype).toBeFalsy();
     expect(CookieService.prototype.get('create-user')).toBe('');
     expect(BarHttpClient.prototype.get).toHaveBeenCalledTimes(1)
