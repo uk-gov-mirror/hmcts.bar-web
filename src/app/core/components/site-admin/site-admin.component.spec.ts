@@ -22,9 +22,6 @@ describe('SiteAdminComponent', () => {
   let component: SiteAdminComponent;
   let fixture: ComponentFixture<SiteAdminComponent>;
   let siteService: SitesService;
-  let barHttpClient: BarHttpClient;
-  let userService: UserService;
-  let featureService: FeatureService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -51,6 +48,7 @@ describe('SiteAdminComponent', () => {
     });
 
   it('check if a feature is disabled', done => {
+      let featureService: FeatureService;
       featureService.isFeatureEnabled('register-user-idam')
         .subscribe(result => {
           expect(result).toBeTruthy();
@@ -73,6 +71,9 @@ describe('SiteAdminComponent', () => {
   // });
 
   it('should test when feature is turned on', async done => {
+    let barHttpClient: BarHttpClient;
+    let userService: UserService;
+    let featureService: FeatureService;
     featureService.isFeatureEnabled('register-user-idam')
       .subscribe(result => {
       expect(result).toBeTruthy();
