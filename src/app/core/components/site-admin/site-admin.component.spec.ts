@@ -75,7 +75,7 @@ describe('SiteAdminComponent', () => {
 
   it('should display emails assigned to site', async() => {
     await fixture.whenStable();
-    fixture.detectChanges();ß
+    fixture.detectChanges();
     component.users$.subscribe(emails => {
       expect(emails.length).toBe(3);
     });
