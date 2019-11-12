@@ -69,6 +69,7 @@ describe('SiteAdminComponent', () => {
     expect(isFeatureOn).toBeTruthy();
     expect(scope).not.toBeUndefined();
     barHttpClient.get('/api/invalidate-token').subscribe( data => {
+      userService.logOut();
       expect(userService.logOut).toHaveBeenCalled();
     });
   });
