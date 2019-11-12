@@ -51,11 +51,11 @@ describe('SiteAdminComponent', () => {
   });
 
   it('should test nginit', async() => {
-    let calledWithParam;
+    let calledWithParam1;
     const scope = 'true';
     const isFeatureOn = true;
     spyOn(barHttpClient, 'get').and.callFake(param => {
-      calledWithParam = param;
+      calledWithParam1 = param;
       return of({ data: [], success: true });
     });
     component.ngOnInit();
@@ -64,7 +64,7 @@ describe('SiteAdminComponent', () => {
     expect(isFeatureOn).toBeTruthy();
     expect(scope).not.toBeUndefined();
     expect(barHttpClient.get).toHaveBeenCalled();
-    expect(calledWithParam).toEqual('/api/invalidate-token');
+    expect(calledWithParam1).toEqual('/api/invalidate-token');
   });
 
   it('should display emails assigned to site', async() => {
