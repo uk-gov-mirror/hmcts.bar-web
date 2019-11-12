@@ -23,6 +23,7 @@ describe('SiteAdminComponent', () => {
   let fixture: ComponentFixture<SiteAdminComponent>;
   let siteService: SitesService;
   let barHttpClient: BarHttpClient;
+  let userService: UserService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -46,6 +47,7 @@ describe('SiteAdminComponent', () => {
     component = fixture.componentInstance;
     siteService = fixture.debugElement.injector.get(SitesService);
     barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
+    userService = fixture.debugElement.injector.get(UserService);
     spyOn(component, 'ngOnInit').and.callThrough();
     fixture.detectChanges();
   });
@@ -58,11 +60,13 @@ describe('SiteAdminComponent', () => {
       calledWithParam1 = param;
       return of({ data: [], success: true });
     });
+    spyOn(userService, 'logOut').and.callThrough();
     component.ngOnInit();
     await fixture.whenStable();
     fixture.detectChanges();
     expect(isFeatureOn).toBeTruthy();
     expect(scope).not.toBeUndefined();
+    expect(userService.logOut).toHaveBeenCalled();
     // expect(barHttpClient.get).toHaveBeenCalled();
     // expect(calledWithParam1).toEqual('/api/invalidate-token');
   });
