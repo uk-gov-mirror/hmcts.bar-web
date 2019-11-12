@@ -50,7 +50,7 @@ describe('SiteAdminComponent', () => {
     fixture.detectChanges();
   });
   
-  it('should display emails assigned to site', async() => {
+  it('should test nginit', async() => {
     let calledWithParam;
     const scope = 'true';
     const isFeatureOn = true;
