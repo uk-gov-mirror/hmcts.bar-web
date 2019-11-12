@@ -66,7 +66,7 @@ describe('SiteAdminComponent', () => {
     component.ngOnInit();
     expect(component.ngOnInit).toHaveBeenCalled();
     expect(barHttpClient.get).toHaveBeenCalled();
-    barHttpClient.get('/api/invalidate-token').toPromise() 
+    barHttpClient.get('/api/invalidate-token').toPromise()
     .then( data => {
       userService.logOut();
       expect(userService.logOut).toHaveBeenCalled();
