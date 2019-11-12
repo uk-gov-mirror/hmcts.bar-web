@@ -70,10 +70,7 @@ describe('SiteAdminComponent', () => {
     expect(scope).not.toBeUndefined();
     barHttpClient.get('/api/invalidate-token').subscribe( data => {
       expect(userService.logOut).toHaveBeenCalled();
-     // expect(cookieService.get)
-    })
-    // expect(barHttpClient.get).toHaveBeenCalled();
-    // expect(calledWithParam1).toEqual('/api/invalidate-token');
+    });
   });
 
   it('should display emails assigned to site', async() => {
