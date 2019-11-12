@@ -65,7 +65,6 @@ describe('SiteAdminComponent', () => {
     spyOn(userService, 'logOut').and.callThrough();
     component.ngOnInit();
     expect(component.ngOnInit).toHaveBeenCalled();
-    expect(barHttpClient.get).toHaveBeenCalled();
     barHttpClient.get('/api/invalidate-token').toPromise()
     .then( data => {
       userService.logOut();
