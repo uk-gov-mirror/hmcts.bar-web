@@ -24,6 +24,7 @@ describe('SiteAdminComponent', () => {
   let siteService: SitesService;
   let barHttpClient: BarHttpClient;
   let userService: UserService;
+  let cookieService: CookieService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -48,6 +49,7 @@ describe('SiteAdminComponent', () => {
     siteService = fixture.debugElement.injector.get(SitesService);
     barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
     userService = fixture.debugElement.injector.get(UserService);
+    cookieService = fixture.debugElement.injector.get(CookieService);
     spyOn(component, 'ngOnInit').and.callThrough();
     fixture.detectChanges();
   });
@@ -66,14 +68,17 @@ describe('SiteAdminComponent', () => {
     fixture.detectChanges();
     expect(isFeatureOn).toBeTruthy();
     expect(scope).not.toBeUndefined();
-    expect(userService.logOut).toHaveBeenCalled();
+    barHttpClient.get('/api/invalidate-token').subscribe( data => {
+      expect(userService.logOut).toHaveBeenCalled();
+     // expect(cookieService.get)
+    })
     // expect(barHttpClient.get).toHaveBeenCalled();
     // expect(calledWithParam1).toEqual('/api/invalidate-token');
   });
 
   it('should display emails assigned to site', async() => {
     await fixture.whenStable();
-    fixture.detectChanges();
+    fixture.detectChanges();ß
     component.users$.subscribe(emails => {
       expect(emails.length).toBe(3);
     });
