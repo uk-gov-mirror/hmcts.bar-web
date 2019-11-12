@@ -1,7 +1,7 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { SiteAdminComponent } from './site-admin.component';
 import { HttpModule } from '@angular/http';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SitesService } from '../../../shared/services/sites/sites.service';
@@ -16,18 +16,12 @@ import { BarHttpClientMock } from '../../test-mocks/bar.http.client.mock';
 import { UserServiceMock } from '../../test-mocks/user.service.mock';
 import { FeatureService } from '../../../shared/services/feature/feature.service';
 import { of } from 'rxjs';
-import { CacheService } from '../../../shared/services/cache/cache.service';
-import { Meta } from '@angular/platform-browser';
-import { instance, mock } from 'ts-mockito/lib/ts-mockito';
 
 describe('SiteAdminComponent', () => {
 
   let component: SiteAdminComponent;
   let fixture: ComponentFixture<SiteAdminComponent>;
   let siteService: SitesService;
-  let barHttpClient: BarHttpClient;
-  let featureService: FeatureService;
-  let cacheService: CacheService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -50,58 +44,7 @@ describe('SiteAdminComponent', () => {
     fixture = TestBed.createComponent(SiteAdminComponent);
     component = fixture.componentInstance;
     siteService = fixture.debugElement.injector.get(SitesService);
-    // barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
-    barHttpClient = new BarHttpClient(instance(mock(HttpClient)), instance(mock(Meta)));
-    cacheService = new CacheService();
-    featureService = new FeatureService(barHttpClient, cacheService);
     fixture.detectChanges();
-    });
-
-  it('check if a feature is disabled', done => {
-      featureService.isFeatureEnabled('register-user-idam')
-        .subscribe(result => {
-          expect(result).toBeTruthy();
-          done();
-      });
-  });
-
-  // it('test http get', () => {
-  //   let calledWithParam: any;
-  //   const barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
-  //   spyOn(barHttpClient, 'get').and.callFake(param => {
-  //   calledWithParam = param;
-  //     return {
-  //       toPromise: () => {
-  //         Promise.resolve(true);
-  //         }
-  //       };
-  //     });
-  //   expect(calledWithParam).toBeUndefined();
-  // });
-
-  it('should test when feature is turned on', async done => {
-    const cookieService = new CookieService({});
-    const userService = new UserService(cookieService);
-    featureService.isFeatureEnabled('register-user-idam')
-      .subscribe(result => {
-      expect(result).toBeTruthy();
-      expect(barHttpClient.get).toHaveBeenCalled();
-      expect(userService.logOut).toHaveBeenCalled();
-      done();
-    });
-    // await fixture.whenStable();
-    // fixture.detectChanges();
-    // const key = '__user_scope';
-    // const value = '';
-    // CookieService.prototype.set(key, value);
-    // spyOn(barHttpClient, 'get').and.callThrough();
-    // spyOn(CookieService.prototype, 'get').and.returnValue('');
-    // spyOn(FeatureService.prototype, 'findAllFeatures').and.returnValue(false);
-    // spyOn(userService, 'logOut').and.callThrough();
-    // expect(FeatureService.prototype.isFeatureEnabled).toBeFalsy();
-    // expect(CookieService.prototype.get('create-user')).toBe('');
-    // expect(barHttpClient.get).toHaveBeenCalled();
-    // expect(userService.logOut).toHaveBeenCalled();
   });
 
   it('should display emails assigned to site', async() => {
