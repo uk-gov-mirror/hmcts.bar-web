@@ -49,7 +49,7 @@ describe('SiteAdminComponent', () => {
     spyOn(component, 'ngOnInit').and.callThrough();
     fixture.detectChanges();
   });
-  
+
   it('should test nginit', async() => {
     let calledWithParam;
     const scope = 'true';
