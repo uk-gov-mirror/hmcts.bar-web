@@ -55,20 +55,19 @@ describe('SiteAdminComponent', () => {
   });
 
   it('should test nginit', async() => {
+    await fixture.whenStable();
+    fixture.detectChanges();
     let calledWithParam1;
-    const scope = 'true';
-    const isFeatureOn = true;
     spyOn(barHttpClient, 'get').and.callFake(param => {
       calledWithParam1 = param;
       return of({ data: [], success: true });
     });
     spyOn(userService, 'logOut').and.callThrough();
     component.ngOnInit();
-    await fixture.whenStable();
-    fixture.detectChanges();
-    expect(isFeatureOn).toBeTruthy();
-    expect(scope).not.toBeUndefined();
-    barHttpClient.get('/api/invalidate-token').subscribe( data => {
+    expect(component.ngOnInit).toHaveBeenCalled();
+    expect(barHttpClient.get).toHaveBeenCalled();
+    barHttpClient.get('/api/invalidate-token').toPromise() 
+    .then( data => {
       userService.logOut();
       expect(userService.logOut).toHaveBeenCalled();
     });
