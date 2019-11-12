@@ -16,12 +16,16 @@ import { BarHttpClientMock } from '../../test-mocks/bar.http.client.mock';
 import { UserServiceMock } from '../../test-mocks/user.service.mock';
 import { FeatureService } from '../../../shared/services/feature/feature.service';
 import { of } from 'rxjs';
+import { CacheService } from '../../../shared/services/cache/cache.service';
 
 describe('SiteAdminComponent', () => {
 
   let component: SiteAdminComponent;
   let fixture: ComponentFixture<SiteAdminComponent>;
   let siteService: SitesService;
+  let barHttpClient: BarHttpClient;
+  let featureService: FeatureService;
+  let cacheService: CacheService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -44,11 +48,13 @@ describe('SiteAdminComponent', () => {
     fixture = TestBed.createComponent(SiteAdminComponent);
     component = fixture.componentInstance;
     siteService = fixture.debugElement.injector.get(SitesService);
+    barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
+    cacheService = new CacheService();
+    featureService = new FeatureService(barHttpClient, cacheService);
     fixture.detectChanges();
     });
 
   it('check if a feature is disabled', done => {
-      let featureService: FeatureService;
       featureService.isFeatureEnabled('register-user-idam')
         .subscribe(result => {
           expect(result).toBeTruthy();
@@ -71,9 +77,8 @@ describe('SiteAdminComponent', () => {
   // });
 
   it('should test when feature is turned on', async done => {
-    let barHttpClient: BarHttpClient;
-    let userService: UserService;
-    let featureService: FeatureService;
+    const cookieService = new CookieService({});
+    const userService = new UserService(cookieService);
     featureService.isFeatureEnabled('register-user-idam')
       .subscribe(result => {
       expect(result).toBeTruthy();
