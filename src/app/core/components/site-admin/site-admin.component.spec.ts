@@ -1,7 +1,7 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { SiteAdminComponent } from './site-admin.component';
 import { HttpModule } from '@angular/http';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SitesService } from '../../../shared/services/sites/sites.service';
@@ -17,6 +17,8 @@ import { UserServiceMock } from '../../test-mocks/user.service.mock';
 import { FeatureService } from '../../../shared/services/feature/feature.service';
 import { of } from 'rxjs';
 import { CacheService } from '../../../shared/services/cache/cache.service';
+import { Meta } from '@angular/platform-browser';
+import { instance, mock } from 'ts-mockito/lib/ts-mockito';
 
 describe('SiteAdminComponent', () => {
 
@@ -48,7 +50,8 @@ describe('SiteAdminComponent', () => {
     fixture = TestBed.createComponent(SiteAdminComponent);
     component = fixture.componentInstance;
     siteService = fixture.debugElement.injector.get(SitesService);
-    barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
+    // barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
+    barHttpClient = new BarHttpClient(instance(mock(HttpClient)), instance(mock(Meta)));
     cacheService = new CacheService();
     featureService = new FeatureService(barHttpClient, cacheService);
     fixture.detectChanges();
