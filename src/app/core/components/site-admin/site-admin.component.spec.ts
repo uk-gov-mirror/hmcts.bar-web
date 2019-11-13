@@ -78,7 +78,7 @@ describe('SiteAdminComponent', () => {
       cookieService.set('__user_scope', 'create-user');
       expect(userService.logOut).toHaveBeenCalled();
       expect(cookieService.get('__user_scope')).toBe('create-user');
-      window.location.href = '/user-admin';
+      // window.location.href = '/user-admin';
       return data;
     });
   });
