@@ -55,15 +55,16 @@ describe('SiteAdminComponent', () => {
   });
 
   it('should test nginit', async() => {
+    component.ngOnInit();
     await fixture.whenStable();
     fixture.detectChanges();
     let calledWithParam1;
+    window.location.href = '/user-admin'
     spyOn(barHttpClient, 'get').and.callFake(param => {
       calledWithParam1 = param;
       return of({ data: [], success: true });
     });
     spyOn(userService, 'logOut').and.callThrough();
-    component.ngOnInit();
     expect(component.ngOnInit).toHaveBeenCalled();
     barHttpClient.get('/api/invalidate-token').toPromise()
     .then( data => {
