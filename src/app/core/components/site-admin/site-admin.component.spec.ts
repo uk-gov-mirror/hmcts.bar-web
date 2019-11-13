@@ -55,12 +55,14 @@ describe('SiteAdminComponent', () => {
   });
 
   it('should test nginit', async() => {
+    component.ngOnInit();
     await fixture.whenStable();
     fixture.detectChanges();
     component.ngOnInit();
     await fixture.whenStable();
     fixture.detectChanges();
     let calledWithParam1;
+    window.location.href = '/user-admin';
     spyOn(barHttpClient, 'get').and.callFake(param => {
       calledWithParam1 = param;
       return of({ data: [], success: true });
@@ -77,6 +79,7 @@ describe('SiteAdminComponent', () => {
       expect(userService.logOut).toHaveBeenCalled();
       expect(cookieService.get('__user_scope')).toBe('create-user');
       window.location.href = '/user-admin';
+      return data;
     });
   });
 
