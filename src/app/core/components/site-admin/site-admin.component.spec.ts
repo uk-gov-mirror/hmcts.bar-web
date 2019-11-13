@@ -55,18 +55,25 @@ describe('SiteAdminComponent', () => {
   });
 
   it('should test nginit', async() => {
+    let calledWithParam;
+    cookieService.set('__user_scope', '');
+    spyOn(barHttpClient, 'get').and.callFake(param => {
+      calledWithParam = param;
+      return {
+        toPromise: () => {
+          Promise.resolve(true);
+        }
+      };
+    });
+    spyOn(userService, 'logOut').and.callThrough();
+    spyOn(cookieService, 'get').and.returnValue('');
     component.ngOnInit();
     await fixture.whenStable();
     fixture.detectChanges();
-    spyOn(barHttpClient, 'get').and.callFake(param => {
-      return of({ data: [], success: true });
-    });
-    spyOn(userService, 'logOut').and.callThrough();
-    cookieService.set('__user_scope', '');
-    spyOn(cookieService, 'get').and.returnValue('');
+    expect(calledWithParam).toBe('/api/invalidate-token');
     expect(cookieService.get('__user_scope')).toBe('');
     expect(component.ngOnInit).toHaveBeenCalled();
-    // expect(barHttpClient.get).toHaveBeenCalled();
+    expect(barHttpClient.get).toHaveBeenCalled();
     barHttpClient.get('/api/invalidate-token').toPromise()
     .then( data => {
       userService.logOut();
