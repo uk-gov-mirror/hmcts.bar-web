@@ -50,43 +50,18 @@ describe('SiteAdminComponent', () => {
     barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
     userService = fixture.debugElement.injector.get(UserService);
     cookieService = fixture.debugElement.injector.get(CookieService);
-    spyOn(component, 'ngOnInit').and.callThrough();
-    fixture.detectChanges();
-    component.ngOnInit();
     fixture.whenStable();
     fixture.detectChanges();
-    // window.location.href = '/user-admin';
-    spyOn(barHttpClient, 'get').and.callFake(param => {
-      return of({ data: [], success: true });
-    });
-    spyOn(userService, 'logOut').and.callThrough();
-    // const cookieService = new CookieService({});
-    cookieService.set('__user_scope', '');
-    spyOn(cookieService, 'get').and.returnValue('');
-    expect(cookieService.get('__user_scope')).toBe('');
-    expect(component.ngOnInit).toHaveBeenCalled();
-    expect(barHttpClient.get).toHaveBeenCalled();
-    barHttpClient.get('/api/invalidate-token').toPromise()
-    .then( data => {
-      userService.logOut();
-      cookieService.set('__user_scope', 'create-user');
-      expect(userService.logOut).toHaveBeenCalled();
-      expect(cookieService.get('__user_scope')).toBe('create-user');
-      // window.location.href = '/user-admin';
-      return data;
-    });
   });
 
   it('should test nginit', async() => {
     component.ngOnInit();
     await fixture.whenStable();
     fixture.detectChanges();
-    // window.location.href = '/user-admin';
     spyOn(barHttpClient, 'get').and.callFake(param => {
       return of({ data: [], success: true });
     });
     spyOn(userService, 'logOut').and.callThrough();
-    // const cookieService = new CookieService({});
     cookieService.set('__user_scope', '');
     spyOn(cookieService, 'get').and.returnValue('');
     expect(cookieService.get('__user_scope')).toBe('');
@@ -98,7 +73,6 @@ describe('SiteAdminComponent', () => {
       cookieService.set('__user_scope', 'create-user');
       expect(userService.logOut).toHaveBeenCalled();
       expect(cookieService.get('__user_scope')).toBe('create-user');
-      // window.location.href = '/user-admin';
       return data;
     });
   });
