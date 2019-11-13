@@ -57,18 +57,26 @@ describe('SiteAdminComponent', () => {
   it('should test nginit', async() => {
     await fixture.whenStable();
     fixture.detectChanges();
+    component.ngOnInit();
+    await fixture.whenStable();
+    fixture.detectChanges();
     let calledWithParam1;
     spyOn(barHttpClient, 'get').and.callFake(param => {
       calledWithParam1 = param;
       return of({ data: [], success: true });
     });
     spyOn(userService, 'logOut').and.callThrough();
-    component.ngOnInit();
+    // const cookieService = new CookieService({});
+    // cookieService.set('__user_scope','create-user');
+    // spyOn(cookieService, 'get').and.returnValue('create-user');
     expect(component.ngOnInit).toHaveBeenCalled();
     barHttpClient.get('/api/invalidate-token').toPromise()
     .then( data => {
       userService.logOut();
+      cookieService.set('__user_scope','create-user');
       expect(userService.logOut).toHaveBeenCalled();
+      expect(cookieService.get('__user_scope')).toBe('create-user');
+      window.location.href = '/user-admin';
     });
   });
 
