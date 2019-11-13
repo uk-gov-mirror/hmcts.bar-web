@@ -61,7 +61,7 @@ describe('SiteAdminComponent', () => {
     });
     spyOn(userService, 'logOut').and.callThrough();
     // const cookieService = new CookieService({});
-    cookieService.set('__user_scope','');
+    cookieService.set('__user_scope', '');
     spyOn(cookieService, 'get').and.returnValue('');
     expect(cookieService.get('__user_scope')).toBe('');
     expect(component.ngOnInit).toHaveBeenCalled();
@@ -86,8 +86,8 @@ describe('SiteAdminComponent', () => {
       return of({ data: [], success: true });
     });
     spyOn(userService, 'logOut').and.callThrough();
-    const cookieService = new CookieService({});
-    cookieService.set('__user_scope','');
+    //const cookieService = new CookieService({});
+    cookieService.set('__user_scope', '');
     spyOn(cookieService, 'get').and.returnValue('');
     expect(cookieService.get('__user_scope')).toBe('');
     expect(component.ngOnInit).toHaveBeenCalled();
