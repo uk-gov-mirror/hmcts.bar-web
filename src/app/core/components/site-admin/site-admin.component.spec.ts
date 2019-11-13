@@ -86,7 +86,7 @@ describe('SiteAdminComponent', () => {
       return of({ data: [], success: true });
     });
     spyOn(userService, 'logOut').and.callThrough();
-    //const cookieService = new CookieService({});
+    // const cookieService = new CookieService({});
     cookieService.set('__user_scope', '');
     spyOn(cookieService, 'get').and.returnValue('');
     expect(cookieService.get('__user_scope')).toBe('');
