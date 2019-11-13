@@ -59,7 +59,7 @@ describe('SiteAdminComponent', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     let calledWithParam1;
-    window.location.href = '/user-admin'
+    window.location.href = '/user-admin';
     spyOn(barHttpClient, 'get').and.callFake(param => {
       calledWithParam1 = param;
       return of({ data: [], success: true });
