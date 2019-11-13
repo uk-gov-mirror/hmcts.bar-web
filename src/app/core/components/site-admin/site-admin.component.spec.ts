@@ -66,7 +66,7 @@ describe('SiteAdminComponent', () => {
     spyOn(cookieService, 'get').and.returnValue('');
     expect(cookieService.get('__user_scope')).toBe('');
     expect(component.ngOnInit).toHaveBeenCalled();
-    expect(barHttpClient.get).toHaveBeenCalled();
+    // expect(barHttpClient.get).toHaveBeenCalled();
     barHttpClient.get('/api/invalidate-token').toPromise()
     .then( data => {
       userService.logOut();
