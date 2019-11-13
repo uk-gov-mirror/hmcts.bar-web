@@ -67,6 +67,7 @@ describe('SiteAdminComponent', () => {
     });
     spyOn(userService, 'logOut').and.callThrough();
     spyOn(cookieService, 'get').and.returnValue('');
+    spyOn(component, 'ngOnInit').and.callThrough();
     component.ngOnInit();
     await fixture.whenStable();
     fixture.detectChanges();
