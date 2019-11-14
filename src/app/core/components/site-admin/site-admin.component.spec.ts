@@ -59,20 +59,15 @@ describe('SiteAdminComponent', () => {
   it('should display emails assigned to site', async() => {
     await fixture.whenStable();
     fixture.detectChanges();
-    // component.registrationFeatureEnabled = false;
     component.users$.subscribe(emails => {
       expect(emails.length).toBe(3);
     });
   });
 
   it('should Call service Logout', async() => {
-    await fixture.whenStable();
-    fixture.detectChanges();
     spyOn(component, 'isRegistrationFeatureTurnedOn').and.returnValue(true);
     spyOn(cookieService, 'get').and.returnValue('');
-    expect(cookieService.get('create-user')).toBe('');
     const features = <any>[{uid: 'register-user-idam', enable: true}];
-    expect(component.isRegistrationFeatureTurnedOn(features)).toBeTruthy();
     spyOn(userService, 'logOut');
     let calledWithParam = '/api/invalidate-token';
     spyOn(barHttpClient, 'get').and.callFake(param => {
@@ -80,28 +75,19 @@ describe('SiteAdminComponent', () => {
           return of({success: true});
         });
     component.ngOnInit();
-    await fixture.whenStable();
-    fixture.detectChanges();
-    barHttpClient.get(calledWithParam).subscribe( resp => {
+    await barHttpClient.get(calledWithParam).subscribe( resp => {
       userService.logOut();
-    // cookieService.set('__user_scope', 'create-user');
-      window.location.href = '/user-admin';
+      cookieService.set('__user_scope', 'create-user');
       expect(calledWithParam).toBe('/api/invalidate-token');
       expect(userService.logOut).toHaveBeenCalled();
-      component.ngOnInit();
-      // expect(cookieService.get('__user_scope')).toBe('');
     });
-    // expect(barHttpClient.get).toHaveBeenCalled();
-    // userService.logOut();
-    // expect(userService.logOut).toHaveBeenCalled();
-    // expect(cookieService.get('__user_scope')).toBe('');
-    // expect(calledWithParam).toBe('/api/invalidate-token');
+    expect(component.isRegistrationFeatureTurnedOn(features)).toBeTruthy();
+    expect(cookieService.get('create-user')).toBe('');
   });
 
   it('clicking on add user button shows the form', async() => {
     await fixture.whenStable();
     fixture.detectChanges();
-    // component.registrationFeatureEnabled = false;
     const addUserBtn = fixture.debugElement.query(By.css('#add-user-modal')).nativeElement;
     addUserBtn.click();
     fixture.detectChanges();
@@ -127,8 +113,6 @@ describe('SiteAdminComponent', () => {
   it('test submitting the form', () => {
     fixture.whenStable();
     fixture.detectChanges();
-    // component.scope = 'create-user';
-    // component.registrationFeatureEnabled = false;
     spyOn(component, 'onFormSubmission').and.callThrough();
     const addUserBtn = fixture.debugElement.query(By.css('#add-user-modal')).nativeElement;
     addUserBtn.click();
@@ -147,8 +131,6 @@ describe('SiteAdminComponent', () => {
     spyOn(siteService, 'removeUserFromSite').and.callThrough();
     await fixture.whenStable();
     fixture.detectChanges();
-    // component.scope = 'create-user';
-    // component.registrationFeatureEnabled = false;
     const modal = fixture.nativeElement.querySelector('#delete-confirmation-dialog');
     expect(modal.hidden).toBeTruthy();
     const delBtn = fixture.nativeElement.querySelector('a#del-1');
