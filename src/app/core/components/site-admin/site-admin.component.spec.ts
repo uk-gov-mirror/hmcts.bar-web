@@ -25,6 +25,7 @@ describe('SiteAdminComponent', () => {
   let barHttpClient: BarHttpClient;
   let userService: UserService;
   let cookieService: CookieService;
+  let featureService: FeatureService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -50,39 +51,9 @@ describe('SiteAdminComponent', () => {
     barHttpClient = fixture.debugElement.injector.get(BarHttpClient);
     userService = fixture.debugElement.injector.get(UserService);
     cookieService = fixture.debugElement.injector.get(CookieService);
+    featureService = fixture.debugElement.injector.get(FeatureService);
     fixture.whenStable();
     fixture.detectChanges();
-  });
-
-  it('should test nginit', async() => {
-    let calledWithParam;
-    cookieService.set('__user_scope', '');
-    spyOn(barHttpClient, 'get').and.callFake(param => {
-      calledWithParam = param;
-      return {
-        toPromise: () => {
-          Promise.resolve(true);
-        }
-      };
-    });
-    spyOn(userService, 'logOut').and.callThrough();
-    spyOn(cookieService, 'get').and.returnValue('');
-    spyOn(component, 'ngOnInit').and.callThrough();
-    component.ngOnInit();
-    await fixture.whenStable();
-    fixture.detectChanges();
-    expect(calledWithParam).toBe('/api/invalidate-token');
-    expect(cookieService.get('__user_scope')).toBe('');
-    expect(component.ngOnInit).toHaveBeenCalled();
-    expect(barHttpClient.get).toHaveBeenCalled();
-    barHttpClient.get('/api/invalidate-token').toPromise()
-    .then( data => {
-      userService.logOut();
-      cookieService.set('__user_scope', 'create-user');
-      expect(userService.logOut).toHaveBeenCalled();
-      expect(cookieService.get('__user_scope')).toBe('create-user');
-      return data;
-    });
   });
 
   it('should display emails assigned to site', async() => {
@@ -90,6 +61,32 @@ describe('SiteAdminComponent', () => {
     fixture.detectChanges();
     component.users$.subscribe(emails => {
       expect(emails.length).toBe(3);
+    });
+  });
+
+  it('should Call service Logout', async() => {
+    await fixture.whenStable();
+    fixture.detectChanges();
+    spyOn(component, 'isRegistrationFeatureTurnedOn').and.returnValue(true);
+    spyOn(cookieService, 'get').and.returnValue('');
+    expect(cookieService.get('create-user')).toBe('');
+    const features = <any>[{uid: 'register-user-idam', enable: true}];
+    expect(component.isRegistrationFeatureTurnedOn(features)).toBeTruthy();
+    spyOn(userService, 'logOut');
+    let calledWithParam = '/api/invalidate-token';
+    spyOn(barHttpClient, 'get').and.callFake(param => {
+          calledWithParam = param;
+          return of({success: true});
+        });
+    component.ngOnInit();
+    await fixture.whenStable();
+    fixture.detectChanges();
+    barHttpClient.get(calledWithParam).subscribe( resp => {
+      userService.logOut();
+      cookieService.set('__user_scope', 'create-user');
+      expect(calledWithParam).toBe('/api/invalidate-token');
+      expect(userService.logOut).toHaveBeenCalled();
+      expect(cookieService.get('__user_scope')).toBe('');
     });
   });
 
@@ -104,6 +101,8 @@ describe('SiteAdminComponent', () => {
   });
 
   it('test cancelling form', () => {
+    fixture.whenStable();
+    fixture.detectChanges();
     const addUserBtn = fixture.debugElement.query(By.css('#add-user-modal')).nativeElement;
     addUserBtn.click();
     fixture.detectChanges();
@@ -117,6 +116,8 @@ describe('SiteAdminComponent', () => {
   });
 
   it('test submitting the form', () => {
+    fixture.whenStable();
+    fixture.detectChanges();
     spyOn(component, 'onFormSubmission').and.callThrough();
     const addUserBtn = fixture.debugElement.query(By.css('#add-user-modal')).nativeElement;
     addUserBtn.click();
