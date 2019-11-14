@@ -59,6 +59,7 @@ describe('SiteAdminComponent', () => {
   it('should display emails assigned to site', async() => {
     await fixture.whenStable();
     fixture.detectChanges();
+    // component.registrationFeatureEnabled = false;
     component.users$.subscribe(emails => {
       expect(emails.length).toBe(3);
     });
@@ -83,16 +84,24 @@ describe('SiteAdminComponent', () => {
     fixture.detectChanges();
     barHttpClient.get(calledWithParam).subscribe( resp => {
       userService.logOut();
-      cookieService.set('__user_scope', 'create-user');
+    // cookieService.set('__user_scope', 'create-user');
+      window.location.href = '/user-admin';
       expect(calledWithParam).toBe('/api/invalidate-token');
       expect(userService.logOut).toHaveBeenCalled();
-      expect(cookieService.get('__user_scope')).toBe('');
+      component.ngOnInit();
+      // expect(cookieService.get('__user_scope')).toBe('');
     });
+    // expect(barHttpClient.get).toHaveBeenCalled();
+    // userService.logOut();
+    // expect(userService.logOut).toHaveBeenCalled();
+    // expect(cookieService.get('__user_scope')).toBe('');
+    // expect(calledWithParam).toBe('/api/invalidate-token');
   });
 
   it('clicking on add user button shows the form', async() => {
     await fixture.whenStable();
     fixture.detectChanges();
+    // component.registrationFeatureEnabled = false;
     const addUserBtn = fixture.debugElement.query(By.css('#add-user-modal')).nativeElement;
     addUserBtn.click();
     fixture.detectChanges();
@@ -118,6 +127,8 @@ describe('SiteAdminComponent', () => {
   it('test submitting the form', () => {
     fixture.whenStable();
     fixture.detectChanges();
+    // component.scope = 'create-user';
+    // component.registrationFeatureEnabled = false;
     spyOn(component, 'onFormSubmission').and.callThrough();
     const addUserBtn = fixture.debugElement.query(By.css('#add-user-modal')).nativeElement;
     addUserBtn.click();
@@ -136,6 +147,8 @@ describe('SiteAdminComponent', () => {
     spyOn(siteService, 'removeUserFromSite').and.callThrough();
     await fixture.whenStable();
     fixture.detectChanges();
+    // component.scope = 'create-user';
+    // component.registrationFeatureEnabled = false;
     const modal = fixture.nativeElement.querySelector('#delete-confirmation-dialog');
     expect(modal.hidden).toBeTruthy();
     const delBtn = fixture.nativeElement.querySelector('a#del-1');
