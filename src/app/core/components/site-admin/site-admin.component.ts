@@ -52,7 +52,7 @@ export class SiteAdminComponent implements OnInit {
       const isFeatureOn = this.isRegistrationFeatureTurnedOn(features);
       this.registrationFeatureEnabled = isFeatureOn;
       console.log('kk', this._cookieService);
-      if (!scope && isFeatureOn) {
+      if (isFeatureOn) {
         this._http.get('/api/invalidate-token').subscribe(resp => {
           this._cookieService.set(UserService.USER_SCOPE_COOKIE, 'create-user');
           this._userService.logOut();
