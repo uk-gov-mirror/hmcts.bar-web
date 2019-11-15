@@ -33,7 +33,8 @@ export class SiteAdminComponent implements OnInit {
   roles = [
     {name: 'Post Clerk', value: 'bar-post-clerk'},
     {name: 'Fee Clerk', value: 'bar-fee-clerk'},
-    {name: 'Senior Clerk', value: 'bar-senior-clerk'}
+    {name: 'Senior Clerk', value: 'bar-senior-clerk'},
+    {name: 'Delivery manager', value: 'bar-delivery-manager'}
   ];
   selectedRole: string;
   registrationFeatureEnabled = false;
