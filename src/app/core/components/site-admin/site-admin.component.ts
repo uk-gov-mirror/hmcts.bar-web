@@ -55,7 +55,7 @@ export class SiteAdminComponent implements OnInit {
         this._http.get('/api/invalidate-token').subscribe(resp => {
           this._userService.logOut();
           this._cookieService.set(UserService.USER_SCOPE_COOKIE, 'create-user');
-          window.location.href = '/user-admin';
+          this.setRedirect();
         });
       } else {
         this.siteId = this._cookieService.get(UserService.SITEID_COOKIE);
@@ -68,6 +68,10 @@ export class SiteAdminComponent implements OnInit {
         );
       }
     });
+  }
+
+  setRedirect() {
+    window.location.href = '/user-admin';
   }
 
   onClickAddUser() {
