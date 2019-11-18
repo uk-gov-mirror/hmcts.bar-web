@@ -54,7 +54,7 @@ export class SiteAdminComponent implements OnInit {
         this._cookieService.set(UserService.USER_SCOPE_COOKIE, 'create-user');
       }
       const scope = this._cookieService.get(UserService.USER_SCOPE_COOKIE);
-      if (scope === undefined && isFeatureOn) {
+      if (!scope && isFeatureOn) {
         this._http.get('/api/invalidate-token').subscribe(resp => {
           this._cookieService.set(UserService.USER_SCOPE_COOKIE, 'create-user');
           this._userService.logOut();
