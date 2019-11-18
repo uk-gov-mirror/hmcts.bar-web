@@ -29,7 +29,6 @@ export class SiteAdminComponent implements OnInit {
   courtName$ = of('...');
   deleteConfirmationOn = false;
   emailToDelete = '';
-  // scope: string;
   roles = [
     {name: 'Post Clerk', value: 'bar-post-clerk'},
     {name: 'Fee Clerk', value: 'bar-fee-clerk'},
@@ -48,11 +47,14 @@ export class SiteAdminComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    const scope = this._cookieService.get(UserService.USER_SCOPE_COOKIE);
-    this._featureService.findAllFeatures().subscribe(features => {
+      this._featureService.findAllFeatures().subscribe(features => {
       const isFeatureOn = this.isRegistrationFeatureTurnedOn(features);
       this.registrationFeatureEnabled = isFeatureOn;
-      if (!scope && isFeatureOn) {
+      if (isFeatureOn) {
+        this._cookieService.set(UserService.USER_SCOPE_COOKIE, 'create-user');
+      }
+      const scope = this._cookieService.get(UserService.USER_SCOPE_COOKIE);
+      if (scope === undefined && isFeatureOn) {
         this._http.get('/api/invalidate-token').subscribe(resp => {
           this._cookieService.set(UserService.USER_SCOPE_COOKIE, 'create-user');
           this._userService.logOut();
