@@ -56,7 +56,7 @@ export class UserService {
     this._cookieService.set(UserService.SITEID_COOKIE, siteId);
     this._cookieService.set(UserService.AUTH_TOKEN, user.email);
     alert('siteid' + this._cookieService.get(UserService.SITEID_COOKIE));
-    alert('AuthToken' + this._cookieService.get(UserService.AUTH_TOKEN))
+    alert('AuthToken' + this._cookieService.get(UserService.AUTH_TOKEN));
   }
 
   logOut(): void {
