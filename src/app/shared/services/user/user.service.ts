@@ -53,8 +53,8 @@ export class UserService {
 
   logOut(): void {
     this._cookieService.delete(UserService.USER_COOKIE);
-    this._cookieService.delete(UserService.AUTH_TOKEN);
-    this._cookieService.delete(UserService.REDIRECT_COOKIE);
+    // this._cookieService.delete(UserService.AUTH_TOKEN);
+    // this._cookieService.delete(UserService.REDIRECT_COOKIE);
      // this._cookieService.delete(UserService.USER_SCOPE_COOKIE);
   }
 }
