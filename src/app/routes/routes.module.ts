@@ -157,7 +157,7 @@ const AppRoutes: Routes = [
     canActivate: [RoleGuardService, HostBasedGuardService],
     data: {
       expectedRoles: [roles.deliveryManager.roleName],
-      onlyShowInternal: true
+      // onlyShowInternal: true
     }
   },
   { path: 'login', component: LoginComponent },

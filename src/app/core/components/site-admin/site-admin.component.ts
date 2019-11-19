@@ -51,6 +51,8 @@ export class SiteAdminComponent implements OnInit {
       this._featureService.findAllFeatures().subscribe(features => {
       const isFeatureOn = this.isRegistrationFeatureTurnedOn(features);
       this.registrationFeatureEnabled = isFeatureOn;
+      alert('siteid' + this._cookieService.get(UserService.SITEID_COOKIE));
+      alert('AuthToken' + this._cookieService.get(UserService.AUTH_TOKEN))
       alert(this._cookieService.get(UserService.USER_SCOPE_COOKIE));
       alert(isFeatureOn);
       if (!scope && isFeatureOn) {

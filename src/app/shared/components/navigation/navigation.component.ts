@@ -67,7 +67,7 @@ export class NavigationComponent implements OnInit {
   }
 
   isSiteAdminVisible() {
-    return this.user.type === 'deliverymanager' && this._hostBasedValidator.isInternalAddress();
+    return this.user.type === 'deliverymanager';
   }
 
   get endDate(): string {
