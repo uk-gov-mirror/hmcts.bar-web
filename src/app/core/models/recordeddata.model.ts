@@ -1,7 +1,8 @@
-export class RecordedData {
+import { IRecordedDataType } from '../interfaces/index';
+export class RecordedData implements IRecordedDataType {
   userFullName: string;
   userRole: string;
-  count = 0;
+  count: number;
 
   assign(data) {
     this.userFullName = data.bar_user_full_name;
