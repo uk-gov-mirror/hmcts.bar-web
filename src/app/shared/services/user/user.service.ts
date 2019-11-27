@@ -29,22 +29,16 @@ export class UserService {
   }
 
   authenticate(userModel: UserModel, siteIds: string[]): boolean {
-    alert('email' + userModel.email);
     if (UserService.USERS.includes(userModel.email)) {
-      alert('users' + UserService.USERS);
-      alert('authenticate');
       console.log('authenticate', siteIds);
       this.storeUser(userModel, siteIds);
       return true;
     }
-    alert('not authenticate');
     return false;
   }
 
   storeUser(user: UserModel, siteIds: string[]): void {
     this._cookieService.set(UserService.USER_COOKIE, JSON.stringify(user));
-    alert('userinfo' + this._cookieService.get(UserService.USER_COOKIE));
-    alert(this._cookieService.get(UserService.SITEID_COOKIE));
     const prevCookie = this._cookieService.get(UserService.SITEID_COOKIE);
     let siteId;
     if (siteIds.includes(prevCookie)) {
@@ -55,9 +49,7 @@ export class UserService {
     console.log('user cookie', UserService.SITEID_COOKIE);
     this._cookieService.set(UserService.SITEID_COOKIE, siteId);
     this._cookieService.set(UserService.AUTH_TOKEN, user.email);
-    alert('siteid' + this._cookieService.get(UserService.SITEID_COOKIE));
-    alert('AuthToken' + this._cookieService.get(UserService.AUTH_TOKEN));
-  }
+    }
 
   logOut(): void {
     this._cookieService.delete(UserService.USER_COOKIE);
