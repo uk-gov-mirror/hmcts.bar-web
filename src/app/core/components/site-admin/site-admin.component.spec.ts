@@ -75,7 +75,7 @@ describe('SiteAdminComponent', () => {
     cancelBtn.click();
     fixture.detectChanges();
     h1 = fixture.nativeElement.querySelector('h1');
-    expect(h1.textContent).toContain('Manage users');
+    expect(h1.textContent).toContain('Manage users');
   });
 
   it('test submitting the form', () => {
@@ -89,7 +89,7 @@ describe('SiteAdminComponent', () => {
     submitBtn.click();
     fixture.detectChanges();
     h1 = fixture.nativeElement.querySelector('h1');
-    expect(h1.textContent).toContain('Manage users');
+    expect(h1.textContent).toContain('Manage users');
     expect(component.onFormSubmission).toHaveBeenCalledTimes(1);
   });
 
