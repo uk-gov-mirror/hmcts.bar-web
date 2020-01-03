@@ -78,7 +78,7 @@ export class SiteAdminComponent implements OnInit {
     this.editMode = true;
   }
   onClickOpenIDAM() {
-    const URL = 'https://idam-web-admin.platform.hmcts.net';
+    const URL = 'https://idam-web-admin-idam-demo.service.core-compute-idam-demo.internal/login';
     window.open(URL, '_blank');
   }
 

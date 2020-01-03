@@ -102,7 +102,7 @@ describe('SiteAdminComponent', () => {
     fixture.detectChanges();
     spyOn(component, 'onClickOpenIDAM').and.callThrough();
     const windowOpenSpy = spyOn(window, 'open');
-    const returnValue = 'https://idam-web-admin.platform.hmcts.net';
+    const returnValue = 'https://idam-web-admin-idam-demo.service.core-compute-idam-demo.internal/login';
     const addIdamUserBtn = fixture.debugElement.query(By.css('#add-idamuser-modal')).nativeElement;
     addIdamUserBtn.click();
     expect(component.onClickOpenIDAM).toHaveBeenCalled();
