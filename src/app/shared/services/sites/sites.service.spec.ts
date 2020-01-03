@@ -75,13 +75,8 @@ describe('SitesService', () => {
       calledWithParam = param;
       return of({ data: [], success: true });
     });
-    const user = {
-      firstname: 'John',
-      lastname: 'Doe',
-      email: 'az@t.com',
-      roles: []
-    };
-    sitesService.addUserToSite(user, 'Y431');
+
+    sitesService.addUserToSite('az@t.com', 'Y431');
     expect(calledWithParam).toEqual('/api/sites/Y431/users/az@t.com');
   });
 

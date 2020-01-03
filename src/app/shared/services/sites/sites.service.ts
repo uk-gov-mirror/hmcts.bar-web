@@ -52,8 +52,8 @@ export class SitesService {
     return this.site$;
   }
 
-  addUserToSite(user: {email: string, firstName: string, lastName: string, roles: Array<String>}, siteId: string): Observable<any> {
-    return this.http.post(`/api/sites/${siteId}/users/${user.email}`, user);
+  addUserToSite(email: string, siteId: string): Observable<any> {
+    return this.http.post(`/api/sites/${siteId}/users/${email}`, null);
   }
 
   removeUserFromSite(email: string, siteId: string): Observable<any> {
