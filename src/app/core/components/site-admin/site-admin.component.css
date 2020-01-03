@@ -8,13 +8,8 @@ h1 > .title {
     height: 100%;
 }
 
-h1 > .btn {
-    padding-top: 5px;
-    float: right;
-    text-align: right;
-    width: 20%;
-    font-size: 19px;
-    height: 100%;
+.button{
+    font-size: 1.3em;
 }
 
 .grid-border {
@@ -58,3 +53,26 @@ h1 > .btn {
 .button-grid [disabled] { opacity: .5; }
 .admin-btn-link p button{right: 10px;}
 .admin-btn-link p a{left: 8px;}
+
+.subline {
+margin-bottom: 30px;
+font-size: 1.5rem;
+line-height: 1.25;
+color: #0b0c0c;
+font-family: "GDS Transport", Arial, sans-serif;
+-webkit-font-smoothing: antialiased;
+font-weight: 400;
+margin-top: 0;
+}
+
+p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}
+
+.heading-medium{
+    font-weight: 400;
+}
