@@ -50,7 +50,7 @@ describe('SiteAdminComponent', () => {
     addUserBtn.click();
     fixture.detectChanges();
     const h1 = fixture.nativeElement.querySelector('h1');
-    expect(h1.textContent).toEqual('Add new user');
+    expect(h1.textContent).toEqual('Add new user');
   });
 
   it('clicking on add Idam user button shows the form', async() => {
@@ -70,7 +70,7 @@ describe('SiteAdminComponent', () => {
     addUserBtn.click();
     fixture.detectChanges();
     let h1 = fixture.nativeElement.querySelector('h1');
-    expect(h1.textContent).toEqual('Add new user');
+    expect(h1.textContent).toEqual('Add new user');
     const cancelBtn = fixture.debugElement.query(By.css('#cancel-add-user')).nativeElement;
     cancelBtn.click();
     fixture.detectChanges();
@@ -84,7 +84,7 @@ describe('SiteAdminComponent', () => {
     addUserBtn.click();
     fixture.detectChanges();
     let h1 = fixture.nativeElement.querySelector('h1');
-    expect(h1.textContent).toEqual('Add new user');
+    expect(h1.textContent).toEqual('Add new user');
     const submitBtn = fixture.debugElement.query(By.css('#cancel-add-user')).nativeElement;
     submitBtn.click();
     fixture.detectChanges();
