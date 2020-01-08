@@ -14,15 +14,15 @@ import { NgForm } from '@angular/forms';
 })
 export class SiteAdminComponent implements OnInit {
 
-  @ViewChild('f') form: NgForm;
-  userEmail: string;
-  editMode = false;
-  users$: Observable<Array<{email: string, forename: string, surname: string}>>;
-  siteId: string;
-  serverFailure: string;
-  courtName$ = of('...');
-  deleteConfirmationOn = false;
-  emailToDelete = '';
+  @ViewChild('f') form: NgForm;
+  userEmail: string;
+  editMode = false;
+  users$: Observable<Array<{email: string, forename: string, surname: string, roles: string}>>;
+  siteId: string;
+  serverFailure: string;
+  courtName$ = of('...');
+  deleteConfirmationOn = false;
+  emailToDelete = '';
 
   constructor(
     private _sitesService: SitesService,
