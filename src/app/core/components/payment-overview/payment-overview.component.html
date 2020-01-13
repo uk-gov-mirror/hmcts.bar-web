@@ -91,14 +91,12 @@
                       <thead>
                       <tr>
                         <th scope="col">User</th>
-                        <th class="text-center" scope="col">Role</th>
                         <th class="text-center" scope="col">Recorded payments</th>
                       </tr>
                       </thead>
                       <tbody>
                         <tr *ngFor="let recordedCount of recordedCount">
                           <th scope="row">{{ recordedCount.userFullName }}</th>
-                          <td class="text-center payment-text-capital">{{ recordedCount.userRole }}</td>
                           <td class="text-center">{{ recordedCount.count }}</td>
                         </tr>
                       </tbody>
@@ -107,7 +105,8 @@
 
               <div *ngIf="(openedTab === 2) ? 'selected' : ''" (click)="changeTabs( 2 )">
 
-                <table aria-describedby="none">
+
+                <table aria-describedby="Pending review">
                   <thead>
                   <tr>
                     <th scope="col">User</th>
@@ -140,7 +139,7 @@
 
               <div *ngIf="(openedTab === 3) ? 'selected' : ''" (click)="changeTabs( 3 )">
 
-                <table aria-describedby="none">
+                <table aria-describedby="Pending approval">
                   <thead>
                   <tr>
                     <th scope="col">User</th>
@@ -168,7 +167,7 @@
               </div>
 
               <div *ngIf="(openedTab === 4) ? 'selected' : ''" (click)="changeTabs( 4 )">
-                <table aria-describedby="none">
+                <table aria-describedby="Transferred to bar">
                   <thead>
                   <tr>
                     <th scope="col">User</th>
