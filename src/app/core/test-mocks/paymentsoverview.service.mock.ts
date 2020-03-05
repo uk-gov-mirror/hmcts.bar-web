@@ -104,7 +104,7 @@ export class PaymentsOverviewServiceMock {
      observer.complete();
    });
  }
-
+ 
   getPaymentStatsByUserAndStatus(userId, status): Observable<IResponse> {
     const data = JSON.parse(stats);
     const success = true;

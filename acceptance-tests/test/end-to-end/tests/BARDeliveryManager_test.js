@@ -70,7 +70,7 @@ Scenario('Payments Overview', I => {
   I.see('Submitted');
   I.see('Carry forward');
   I.see('Ready to review');
-  I.see('Recorded');
+  I.see('Draft');
   I.see('Pending');
   I.see('Transfer to BAR');
   I.dontSee('Transfer to BAR');
@@ -101,13 +101,13 @@ Scenario('Payments Pending review', I => {
   I.see('Approved');
   I.see('Carry forward');
   I.see('Ready to transfer to BAR');
-  I.see('Recorded');
+  I.see('Draft');
   I.see('Pending review');
   I.see('Transfer to BAR');
   I.see('Validated');
-  I.see('Recorded');
+  I.see('Draft');
   I.see('Pending');
-  I.see('Transferred to BAR');
+  I.see('Approved');
   I.see('Pending Review');
   I.see('Pending Approval');
 });
@@ -123,6 +123,22 @@ Scenario('Trying to confirm transfer to BAR when feature is disabled', I => {
   I.toggleSendToPayhubFeature(false);
   I.click('Save');
   I.DeliveryManagerConfirmTransferToBAR('This function is temporarily unavailable.');
+});
+
+Scenario('User admin console', I => {
+  I.amOnPage('/user-admin');
+  I.see('Manage users');
+  I.see('Add or change a user');
+  I.see('You can add a new user or change their role.');
+  I.see('Add or change user role');
+  I.see('You can add a user to this court');
+  I.see('Assign user');
+  I.wait(BARATConstants.fiveSecondWaitTime);
+  I.click('#add-user-modal');
+  I.see('Email');
+  I.see('Add user');
+  I.wait(BARATConstants.twoSecondWaitTime);
+  I.addNewUser();
 });
 
 Scenario('Confirm transfer to BAR', I => {

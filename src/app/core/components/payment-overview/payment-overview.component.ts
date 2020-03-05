@@ -122,9 +122,9 @@ export class PaymentOverviewComponent implements OnInit {
         }, console.log);
 
     this.paymentOverviewService.getRecordedData('D', moment().format(), moment().format())
-      .subscribe( (data: any) => {
-          this.createRecordedDataOverview(data.data);
-    });
+    .subscribe( (data: any) => {
+        this.createRecordedDataOverview(data.data);
+  });
   }
 
   get user (): UserModel {
@@ -261,7 +261,6 @@ export class PaymentOverviewComponent implements OnInit {
 
       this.recordedCount.push(model);
     }
-
   }
 
   createSeniorFeeClerksOverview(seniorFeeClerksData) {
