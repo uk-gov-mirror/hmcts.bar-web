@@ -154,7 +154,7 @@ const AppRoutes: Routes = [
   },
   { path: 'user-admin',
     component: SiteAdminComponent,
-    canActivate: [RoleGuardService, HostBasedGuardService],
+    canActivate: [RoleGuardService],
     data: {
       expectedRoles: [roles.deliveryManager.roleName],
       onlyShowInternal: true
