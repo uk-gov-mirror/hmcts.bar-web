@@ -45,7 +45,8 @@
 
       <div class="page-header__counts">
         <div class="payment-count">
-          <app-card [number]="count.transferredToBar" label="Approved" white="true"></app-card>
+          <app-card [number]="count.transferredToBar" label="Transferred to BAR" white="true"></app-card>
+          <app-card [number]="count.approved" label="Approved" white="true"></app-card>
           <app-card [number]="count.pendingApproval" label="Pending Approval" white="true"></app-card>
           <app-card [number]="count.pendingReview" label="Pending Review" white="true"></app-card>
           <app-card [number]="count.validated" label="Validated" white="true"></app-card>
