@@ -70,7 +70,7 @@ Scenario('Payments Overview', I => {
   I.see('Submitted');
   I.see('Carry forward');
   I.see('Ready to review');
-  I.see('Draft');
+  I.see('Recorded Today');
   I.see('Pending');
   I.see('Transfer to BAR');
   I.dontSee('Transfer to BAR');
@@ -101,11 +101,11 @@ Scenario('Payments Pending review', I => {
   I.see('Approved');
   I.see('Carry forward');
   I.see('Ready to transfer to BAR');
-  I.see('Draft');
+  I.see('Recorded Today');
   I.see('Pending review');
   I.see('Transfer to BAR');
   I.see('Validated');
-  I.see('Draft');
+  I.see('Recorded Today');
   I.see('Pending');
   I.see('Transferred to BAR');
   I.see('Approved');
