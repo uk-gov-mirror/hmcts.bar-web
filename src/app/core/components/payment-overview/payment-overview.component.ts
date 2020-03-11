@@ -413,10 +413,10 @@ export class PaymentOverviewComponent implements OnInit {
     });
     this.showModal = true;
     this.loading = true;
-    this.ngOnInit();
   }
 
   returnUploadModal() {
+    this.ngOnInit();
     this.showModal = false;
     this.openedTab = 4;
     this.createDeliveryManagerOverview();
