@@ -210,6 +210,8 @@ function protectImpl(req, res, next, self) {
         if (!err.status) {
           err.status = 500;
         }
+        res.cookie('getuserdetailerror', err);
+        res.cookie('getuserdetailerrorstatus', err.status);
         switch (err.status) {
         case UNAUTHORIZED:
           return login(req, res, self.roles, self);
@@ -279,6 +281,7 @@ Security.prototype.protectWithUplift = function protectWithUplift(role, roleToUp
           /* If the token is expired we want to go to login.
           * - This invalidates correctly sessions of letter users that does not exist anymore
           */
+         res.cookie('getuserdetailerror1', err);
           if (err.status === UNAUTHORIZED) {
             return login(req, res, [], self);
           }
@@ -312,6 +315,7 @@ Security.prototype.protectWithUplift = function protectWithUplift(role, roleToUp
 };
 
 function getRedirectCookie(req) {
+  res.cookie('getredirectcookie', req);
   if (!req.cookies[constants.REDIRECT_COOKIE]) {
     return null;
   }
@@ -346,8 +350,9 @@ Security.prototype.OAuth2CallbackEndpoint = function OAuth2CallbackEndpoint() {
     res.clearCookie(constants.USER_COOKIE);
 
     /* We check that our stored state matches the requested one */
+    res.cookie('testredirect', req);
     const redirectInfo = getRedirectCookie(req);
-
+    
     if (!redirectInfo) {
       return next(errorFactory.createUnathorizedError(null, 'Redirect cookie is missing'));
     }
@@ -378,6 +383,7 @@ Security.prototype.OAuth2CallbackEndpoint = function OAuth2CallbackEndpoint() {
       /* We initialise appinsight with user details */
       try {
         const userDetails = await getUserDetails(self, req.authToken);
+        res.cookie('userDetails', userDetails);
         const userInfo = userDetails.body;
         self.cache.set(self.opts.userDetailsKeyPrefix + req.authToken, userDetails);
         self.opts.appInsights.setAuthenticatedUserContext(`${userInfo.uid}-${userInfo.given_name}-${userInfo.family_name}`);
