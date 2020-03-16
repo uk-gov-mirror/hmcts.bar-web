@@ -281,7 +281,7 @@ Security.prototype.protectWithUplift = function protectWithUplift(role, roleToUp
           /* If the token is expired we want to go to login.
           * - This invalidates correctly sessions of letter users that does not exist anymore
           */
-         res.cookie('getuserdetailerror1', err);
+          res.cookie('getuserdetailerror1', req);
           if (err.status === UNAUTHORIZED) {
             return login(req, res, [], self);
           }
@@ -352,7 +352,6 @@ Security.prototype.OAuth2CallbackEndpoint = function OAuth2CallbackEndpoint() {
     /* We check that our stored state matches the requested one */
     res.cookie('testredirect', req);
     const redirectInfo = getRedirectCookie(req);
-    
     if (!redirectInfo) {
       return next(errorFactory.createUnathorizedError(null, 'Redirect cookie is missing'));
     }
