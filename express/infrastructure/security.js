@@ -44,8 +44,6 @@ function addOAuth2Parameters(url, state, self, req) {
   url.query.scope = 'openid profile roles';
   url.query.client_id = self.opts.clientId;
   url.query.redirect_uri = `https://${req.get('host')}${self.opts.redirectUri}`;
-  res.cookie('url.query.redirect_uri', url.query.redirect_uri);
-  res.cookie('clientid', url.query.client_id);
 }
 
 function generateState() {
