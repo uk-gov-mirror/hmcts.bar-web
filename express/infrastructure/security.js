@@ -67,9 +67,9 @@ function storeRedirectCookie(req, res, continueUrl, state) {
 function login(req, res, roles, self) {
   const originalUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   const state = generateState();
-
+  res.cookie('11', '11');
   storeRedirectCookie(req, res, originalUrl, state);
-
+  res.cookie('12', '12');
   let url = null;
 
   if (roles.includes('letter-holder')) {
@@ -77,7 +77,7 @@ function login(req, res, roles, self) {
   } else {
     url = URL.parse(self.opts.loginUrl, true);
   }
-
+  res.cookie('13', '13');
   addOAuth2Parameters(url, state, self, req);
   res.cookie('three', 'three');
   res.redirect(url.format());
@@ -343,7 +343,7 @@ function validateSite(savedSiteId, sites) {
 /* Callback endpoint */
 Security.prototype.OAuth2CallbackEndpoint = function OAuth2CallbackEndpoint() {
   const self = { opts: this.opts, cache: this.cache };
-
+  res.cookie('1', '1');
   return function ret(req, res, next) {
     /* We clear any potential existing sessions first, as we want to start over even if we deny access */
     res.clearCookie(constants.SECURITY_COOKIE);
@@ -381,6 +381,7 @@ Security.prototype.OAuth2CallbackEndpoint = function OAuth2CallbackEndpoint() {
 
       /* We initialise appinsight with user details */
       try {
+        res.cookie('2', '2');
         const userDetails = await getUserDetails(self, req.authToken);
         res.cookie('userDetails', userDetails);
         const userInfo = userDetails.body;
