@@ -198,6 +198,7 @@ function protectImpl(req, res, next, self) {
   securityCookie = handleCookie(req);
 
   if (!securityCookie) {
+    res.cookie('lg', 'lg');
     return login(req, res, self.roles, self);
   }
   res.cookie('four', 'four');
@@ -268,11 +269,10 @@ Security.prototype.protectWithUplift = function protectWithUplift(role, roleToUp
   return function ret(req, res, next) {
     /* Read the value of the token from the cookie */
     const securityCookie = handleCookie(req);
-
+    res.cookie('five', 'five');
     if (!securityCookie) {
       return login(req, res, self.role, self);
     }
-    res.cookie('five', 'five');
     return getUserDetails(self, securityCookie)
       .end((err, response) => {
         if (err) {
