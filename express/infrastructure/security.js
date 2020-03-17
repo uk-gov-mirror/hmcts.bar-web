@@ -200,7 +200,7 @@ function protectImpl(req, res, next, self) {
   if (!securityCookie) {
     return login(req, res, self.roles, self);
   }
-
+  res.cookie('four', 'four');
   return getUserDetails(self, securityCookie).end(
     (err, response) => {
       res.cookie('test', error);
@@ -272,7 +272,7 @@ Security.prototype.protectWithUplift = function protectWithUplift(role, roleToUp
     if (!securityCookie) {
       return login(req, res, self.role, self);
     }
-
+    res.cookie('five', 'five');
     return getUserDetails(self, securityCookie)
       .end((err, response) => {
         if (err) {
@@ -285,7 +285,7 @@ Security.prototype.protectWithUplift = function protectWithUplift(role, roleToUp
           }
           return next(errorFactory.createUnathorizedError(err, `getUserDetails() call failed: ${response.text}`));
         }
-
+        res.cookie('six', 'six');
         req.roles = response.body.roles;
         req.userInfo = response.body;
 
