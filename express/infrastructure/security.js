@@ -343,7 +343,6 @@ function validateSite(savedSiteId, sites) {
 /* Callback endpoint */
 Security.prototype.OAuth2CallbackEndpoint = function OAuth2CallbackEndpoint() {
   const self = { opts: this.opts, cache: this.cache };
-  res.cookie('1', '1');
   return function ret(req, res, next) {
     /* We clear any potential existing sessions first, as we want to start over even if we deny access */
     res.clearCookie(constants.SECURITY_COOKIE);
