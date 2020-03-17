@@ -27,7 +27,6 @@ function Security(options) {
   this.cache = new NodeCache({ stdTTL, useClones: false });
   this.opts = options || {};
   this.opts.userDetailsKeyPrefix = `${options.apiUrl}/o/userinfo/`;
-  res.cookie('one', 'one');
   if (!this.opts.loginUrl) {
     throw new Error('login URL required for Security');
   }
@@ -45,7 +44,6 @@ function addOAuth2Parameters(url, state, self, req) {
   url.query.scope = 'openid profile roles';
   url.query.client_id = self.opts.clientId;
   url.query.redirect_uri = `https://${req.get('host')}${self.opts.redirectUri}`;
-  res.cookie('two', 'two');
 }
 
 function generateState() {
@@ -98,7 +96,6 @@ function authorize(req, res, next, self) {
 
 function getTokenFromCode(self, req) {
   const url = URL.parse(`${self.opts.apiUrl}/o/token`, true);
-  res.cookie('four', 'four');
   return request.post(url.format())
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/x-www-form-urlencoded')
@@ -119,7 +116,6 @@ function invalidateToken(self, req) {
 
 function getUserDetails(self, securityCookie) {
   const value = self.cache.get(self.opts.userDetailsKeyPrefix + securityCookie);
-  res.cookie('five', 'five');
   if (value) {
     const promise = Promise.resolve(value);
     promise.end = callback => {
