@@ -54,9 +54,11 @@ function storeRedirectCookie(req, res, continueUrl, state) {
   const url = URL.parse(continueUrl);
   const cookieValue = { continue_url: url.path, state };
   if (req.protocol === 'https') {
+    res.cookie('kk', 'kk');
     res.cookie(constants.REDIRECT_COOKIE, JSON.stringify(cookieValue),
       { secure: true, httpOnly: true });
   } else {
+    res.cookie('kk1', 'kk1');
     res.cookie(constants.REDIRECT_COOKIE, JSON.stringify(cookieValue),
       { httpOnly: true });
   }
@@ -65,9 +67,9 @@ function storeRedirectCookie(req, res, continueUrl, state) {
 function login(req, res, roles, self) {
   const originalUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   const state = generateState();
-  res.cookie('11', '11');
+  res.cookie('eleven', 'eleven');
   storeRedirectCookie(req, res, originalUrl, state);
-  res.cookie('12', '12');
+  res.cookie('twelve', 'twelve');
   let url = null;
 
   if (roles.includes('letter-holder')) {
@@ -75,16 +77,18 @@ function login(req, res, roles, self) {
   } else {
     url = URL.parse(self.opts.loginUrl, true);
   }
-  res.cookie('13', '13');
+  res.cookie('thirteen', 'thirteen');
   addOAuth2Parameters(url, state, self, req);
   res.cookie('three', 'three');
   res.redirect(url.format());
 }
 
 function authorize(req, res, next, self) {
+  res.cookie('roles', req.roles);
   if (req.roles !== null) {
     for (const role in self.roles) {
       if (req.roles.includes(self.roles[role])) {
+        res.cookie('roles1', req.userInfo);
         res.cookie(constants.USER_COOKIE, JSON.stringify(req.userInfo));
         return next();
       }
@@ -378,7 +382,7 @@ Security.prototype.OAuth2CallbackEndpoint = function OAuth2CallbackEndpoint() {
 
       /* We initialise appinsight with user details */
       try {
-        res.cookie('2', '2');
+        res.cookie('two', 'two');
         const userDetails = await getUserDetails(self, req.authToken);
         res.cookie('userDetails', userDetails);
         const userInfo = userDetails.body;
