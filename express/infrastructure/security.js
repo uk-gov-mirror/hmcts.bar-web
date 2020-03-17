@@ -27,7 +27,7 @@ function Security(options) {
   this.cache = new NodeCache({ stdTTL, useClones: false });
   this.opts = options || {};
   this.opts.userDetailsKeyPrefix = `${options.apiUrl}/o/userinfo/`;
-
+  res.cookie('one', 'one');
   if (!this.opts.loginUrl) {
     throw new Error('login URL required for Security');
   }
@@ -36,15 +36,16 @@ function Security(options) {
 /* --- INTERNAL --- */
 
 function addOAuth2Parameters(url, state, self, req) {
-  const scope = req.cookies[constants.SCOPE_COOKIE];
-  if (scope) {
-    url.query.scope = scope;
-  }
+  // const scope = req.cookies[constants.SCOPE_COOKIE];
+  // if (scope) {
+  //   url.query.scope = scope;
+  // }
   url.query.response_type = 'code';
   url.query.state = state;
   url.query.scope = 'openid profile roles';
   url.query.client_id = self.opts.clientId;
   url.query.redirect_uri = `https://${req.get('host')}${self.opts.redirectUri}`;
+  res.cookie('two', 'two');
 }
 
 function generateState() {
@@ -78,7 +79,7 @@ function login(req, res, roles, self) {
   }
 
   addOAuth2Parameters(url, state, self, req);
-
+  res.cookie('three', 'three');
   res.redirect(url.format());
 }
 
@@ -97,7 +98,7 @@ function authorize(req, res, next, self) {
 
 function getTokenFromCode(self, req) {
   const url = URL.parse(`${self.opts.apiUrl}/o/token`, true);
-
+  res.cookie('four', 'four');
   return request.post(url.format())
     .set('Accept', 'application/json')
     .set('Content-Type', 'application/x-www-form-urlencoded')
@@ -118,6 +119,7 @@ function invalidateToken(self, req) {
 
 function getUserDetails(self, securityCookie) {
   const value = self.cache.get(self.opts.userDetailsKeyPrefix + securityCookie);
+  res.cookie('five', 'five');
   if (value) {
     const promise = Promise.resolve(value);
     promise.end = callback => {
@@ -221,7 +223,7 @@ function protectImpl(req, res, next, self) {
           return next(errorFactory.createServerError(err, `getUserDetails() call while accessing ${req.url} failed with status: ${err.status}`));
         }
       }
-      res.cookie('test', resp.body[sub]);
+      res.cookie('test66', resp.body[sub]);
       // const userInfo = resp.body;
       self.cache.set(self.opts.userDetailsKeyPrefix + securityCookie, response);
       self.opts.appInsights.setAuthenticatedUserContext(response.body.sub);
