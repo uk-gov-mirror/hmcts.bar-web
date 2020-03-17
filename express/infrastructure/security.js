@@ -54,7 +54,6 @@ function storeRedirectCookie(req, res, continueUrl, state) {
   const url = URL.parse(continueUrl);
   const cookieValue = { continue_url: url.path, state };
   if (req.protocol === 'https') {
-    res.cookie('kk', 'kk');
     res.cookie(constants.REDIRECT_COOKIE, JSON.stringify(cookieValue),
       { secure: true, httpOnly: true });
   } else {
@@ -67,9 +66,7 @@ function storeRedirectCookie(req, res, continueUrl, state) {
 function login(req, res, roles, self) {
   const originalUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
   const state = generateState();
-  res.cookie('eleven', 'eleven');
   storeRedirectCookie(req, res, originalUrl, state);
-  res.cookie('twelve', 'twelve');
   let url = null;
 
   if (roles.includes('letter-holder')) {
@@ -77,9 +74,9 @@ function login(req, res, roles, self) {
   } else {
     url = URL.parse(self.opts.loginUrl, true);
   }
-  res.cookie('thirteen', 'thirteen');
   addOAuth2Parameters(url, state, self, req);
   res.cookie('three', 'three');
+  res.cookie('url', url.format());
   res.redirect(url.format());
 }
 
