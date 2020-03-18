@@ -21,7 +21,7 @@ const constants = Object.freeze({
   SCOPE_COOKIE: '__user_scope'
 });
 
-const ACCESS_TOKEN_OAUTH2 = 'access_token';
+// const ACCESS_TOKEN_OAUTH2 = 'access_token';
 
 function Security(options) {
   this.cache = new NodeCache({ stdTTL, useClones: false });
