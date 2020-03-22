@@ -29,7 +29,7 @@ export class UserService {
   }
 
   authenticate(userModel: UserModel, siteIds: string[]): boolean {
-    if (UserService.USERS.includes(userModel.email)) {
+    if (UserService.USERS.includes(userModel.sub)) {
       console.log('authenticate', siteIds);
       this.storeUser(userModel, siteIds);
       return true;
@@ -48,8 +48,8 @@ export class UserService {
     }
     console.log('user cookie', UserService.SITEID_COOKIE);
     this._cookieService.set(UserService.SITEID_COOKIE, siteId);
-    this._cookieService.set(UserService.AUTH_TOKEN, user.email);
-    }
+    this._cookieService.set(UserService.AUTH_TOKEN, user.sub);
+  }
 
   logOut(): void {
     this._cookieService.delete(UserService.USER_COOKIE);
