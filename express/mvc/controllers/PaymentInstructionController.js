@@ -42,8 +42,6 @@ class PaymentInstructionController {
 
   getCount(req, res) {
     const queryString = req.url.substring(req.url.indexOf('?'));
-    res.cookie('reqobject', req);
-    res.cookie('querystring', queryString);
     return this.paymentInstructionService.getCount(queryString, req)
       .then(statusCount => res.json({ data: statusCount.body, success: true }))
       .catch(err => response(res, err.body, HttpStatusCodes.INTERNAL_SERVER_ERROR));
