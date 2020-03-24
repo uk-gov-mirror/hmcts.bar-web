@@ -18,7 +18,8 @@ const constants = Object.freeze({
   REDIRECT_COOKIE: '__redirect',
   USER_COOKIE: '__user-info',
   SITEID_COOKIE: '__site-id',
-  SCOPE_COOKIE: '__user_scope'
+  SECURITY_COOKIE_ID: '__id-token',
+  ID_TOKEN_OAUTH2: 'id_token'
 });
 
 const ACCESS_TOKEN_OAUTH2 = 'access_token';
@@ -110,12 +111,12 @@ function getTokenFromCode(self, req) {
     .send({ redirect_uri: `https://${req.get('host')}${self.opts.redirectUri}` });
 }
 
-function invalidateToken(self, req) {
-  const url = URL.parse(`${self.opts.apiUrl}/session/${req.cookies[constants.SECURITY_COOKIE]}`, true);
+// function invalidateToken(self, req) {
+//   const url = URL.parse(`${self.opts.apiUrl}/session/${req.cookies[constants.SECURITY_COOKIE]}`, true);
 
-  return request.delete(url.format())
-    .auth(self.opts.clientId, self.opts.clientSecret);
-}
+//   return request.delete(url.format())
+//     .auth(self.opts.clientId, self.opts.clientSecret);
+// }
 
 function getUserDetails(self, securityCookie) {
   const value = self.cache.get(self.opts.userDetailsKeyPrefix + securityCookie);
@@ -147,9 +148,9 @@ function storeCookie(req, res, key, value, isHttpOnly) {
   }
 }
 
-function storeTokenCookie(req, res, token) {
+function storeTokenCookie(req, res, token, cookieName) {
   req.authToken = token;
-  storeCookie(req, res, constants.SECURITY_COOKIE, token);
+  storeCookie(req, res, cookieName, token);
 }
 
 function handleCookie(req) {
@@ -161,24 +162,36 @@ function handleCookie(req) {
   return null;
 }
 
+function invalidatesUserToken(self, securityCookie) {
+  return request
+    .get(`${self.opts.apiUrl}/o/endSession`)
+    .query({ id_token_hint: securityCookie, post_logout_redirect_uri: '/logout' })
+    .set('Accept', 'application/json');
+}
+
 Security.prototype.logout = function logout() {
   const self = { opts: this.opts, cache: this.cache };
 
-  return function ret(req, res) {
-    return invalidateToken(self, req).end(err => {
+  // eslint-disable-next-line no-unused-vars
+  return function ret(req, res, next) {
+    const token = req.cookies[constants.SECURITY_COOKIE_ID];
+    return invalidatesUserToken(self, token).end(err => {
       if (err) {
-        Logger.getLogger('BAR-WEB: security.js').error(err);
+        Logger.getLogger('BAR WEB: security.js').error(err);
       }
-
-      const token = req.cookies[constants.SECURITY_COOKIE];
       res.clearCookie(constants.SECURITY_COOKIE);
+      res.clearCookie(constants.SECURITY_COOKIE_ID);
       res.clearCookie(constants.REDIRECT_COOKIE);
       res.clearCookie(constants.USER_COOKIE);
-      res.clearCookie(constants.SCOPE_COOKIE);
-      if (token) {
-        self.cache.del(token);
-      }
-      res.redirect('/');
+      res.clearCookie(constants.authToken);
+      res.clearCookie(constants.userInfo);
+
+    // if (token) {
+    //   self.cache.del(token);
+    //   res.redirect(`${self.opts.loginUrl}/logout?jwt=${token}`);
+    // } else {
+    //   res.redirect(`${self.opts.loginUrl}/logout`);
+    // }
     });
   };
 };
@@ -368,7 +381,14 @@ Security.prototype.OAuth2CallbackEndpoint = function OAuth2CallbackEndpoint() {
       }
 
       /* We store it in a session cookie */
-      storeTokenCookie(req, res, response.body[ACCESS_TOKEN_OAUTH2]);
+      /* We store it in a session cookie */
+      // storeTokenCookie(req, res, response.body[ACCESS_TOKEN_OAUTH2]);
+      const accessToken = response.body[ACCESS_TOKEN_OAUTH2];
+      const idToken = response.body[constants.ID_TOKEN_OAUTH2];
+      storeTokenCookie(req, res, accessToken, constants.SECURITY_COOKIE);
+      storeTokenCookie(req, res, idToken, constants.SECURITY_COOKIE_ID);
+      // storeCookie(req, res, accessToken, constants.SECURITY_COOKIE);
+      // storeCookie(req, res, idToken, constants.SECURITY_COOKIE_ID);
 
       /* We delete redirect cookie */
       res.clearCookie(constants.REDIRECT_COOKIE);
