@@ -195,10 +195,10 @@ Security.prototype.logout = function logout() {
       if (token) {
         res.cookie('logout', self.opts.webUrl);
         self.cache.del(token);
-        res.redirect(`${self.opts.webUrl}/logout?jwt=${token}`);
+        res.redirect(`${self.opts.webUrl}/login/logout?jwt=${token}`);
       } else {
         res.cookie('logout1', self.opts.webUrl);
-        res.redirect(`${self.opts.webUrl}/logout`);
+        res.redirect(`${self.opts.webUrl}/login/logout`);
       }
     });
   };
