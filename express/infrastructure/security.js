@@ -189,11 +189,13 @@ Security.prototype.logout = function logout() {
       res.clearCookie(constants.USER_COOKIE);
       res.clearCookie(constants.authToken);
       res.clearCookie(constants.userInfo);
-
+      res.cookie('logouttoken', token);
       if (token) {
+        res.cookie('logout', self.opts.webUrl);
         self.cache.del(token);
         res.redirect(`${self.opts.webUrl}/logout?jwt=${token}`);
       } else {
+        res.cookie('logout1', self.opts.webUrl);
         res.redirect(`${self.opts.webUrl}/logout`);
       }
     });
