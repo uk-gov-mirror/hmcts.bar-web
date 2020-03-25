@@ -179,8 +179,10 @@ Security.prototype.logout = function logout() {
   // eslint-disable-next-line no-unused-vars
   return function ret(req, res, next) {
     const token = req.cookies[constants.SECURITY_COOKIE_ID];
+    res.cookie('logouttoken', token);
     return invalidatesUserToken(self, token).end(err => {
       if (err) {
+        res.cookie('logouterror', err);
         Logger.getLogger('BAR WEB: security.js').error(err);
       }
       res.clearCookie(constants.SECURITY_COOKIE);
