@@ -159,7 +159,6 @@ function storeTokenCookie(req, res, token, cookieName) {
 
 function handleCookie(req) {
   if (req.cookies && req.cookies[constants.SECURITY_COOKIE]) {
-    res.cookie('hhjj', req.cookies[constants.SECURITY_COOKIE]);
     req.authToken = req.cookies[constants.SECURITY_COOKIE];
     return req.authToken;
   }
