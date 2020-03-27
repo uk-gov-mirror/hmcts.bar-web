@@ -182,7 +182,7 @@ Security.prototype.logout = function logout() {
     res.cookie('logouttoken', token);
     return invalidatesUserToken(self, token).end(err => {
       if (err) {
-        res.cookie('logouterror', err);
+        // res.cookie('logouterror', err);
         Logger.getLogger('BAR WEB: security.js').error(err);
       }
       res.clearCookie(constants.SECURITY_COOKIE);
@@ -193,11 +193,10 @@ Security.prototype.logout = function logout() {
       res.clearCookie(constants.userInfo);
       res.cookie('logouttoken', token);
       if (token) {
-        res.cookie('logout', self.opts.webUrl);
+        // res.cookie('logout', self.opts.webUrl);
         self.cache.del(token);
         res.redirect(`${self.opts.webUrl}/login/logout?jwt=${token}`);
       } else {
-        res.cookie('logout1', self.opts.webUrl);
         res.redirect(`${self.opts.webUrl}/login/logout`);
       }
     });
