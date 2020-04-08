@@ -3,7 +3,6 @@ const controllers = require('./mvc/controllers');
 const middleware = require('./mvc/middleware');
 const config = require('config');
 const HttpStatus = require('http-status-codes');
-const authController = require('./mvc/controllers/AuthController');
 
 module.exports = appInsights => express.Router()
 
