@@ -42,9 +42,9 @@ export class PaymentReviewSummaryComponent implements OnInit {
   constructor(
     private _paymentOverviewService: PaymentsOverviewService,
     private _paymentStateService: PaymentStateService,
-    private _route: ActivatedRoute,
     private _paymentsInstructionService: PaymentInstructionsService,
-    private _userService: UserService
+    private _userService: UserService,
+    private _route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -121,7 +121,7 @@ export class PaymentReviewSummaryComponent implements OnInit {
 
   getPaymentsCounts(status): Observable<number> {
     const searchModel: SearchModel = new SearchModel();
-    searchModel.userId = this.userId;
+    searchModel.userId = this._userService.getUser().uid.toString();
     searchModel.startDate = moment().format();
     searchModel.endDate = moment().format();
     searchModel.status = status;
