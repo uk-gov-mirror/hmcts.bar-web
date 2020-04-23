@@ -117,7 +117,7 @@ export class PaymentReviewSummaryComponent implements OnInit {
 
   getPaymentsCounts(): void {
     const searchModel: SearchModel = new SearchModel();
-    searchModel.userId = this._userService.getUser().id.toString();
+    searchModel.userId = this._userService.getUser().uid.toString();
     searchModel.startDate = moment().format();
     searchModel.endDate = moment().format();
     searchModel.status = PaymentStatus.TRANSFERREDTOBAR;
